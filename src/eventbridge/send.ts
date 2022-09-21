@@ -1,0 +1,52 @@
+// import { EventBridge } from 'aws-sdk';
+import { EventBridge } from 'aws-sdk';
+import { EventEntry } from './EventEntry';
+import { Entries } from './Entries';
+import { SendResponse } from './SendResponse';
+import logger from '../observability/logger';
+import { MCRequest } from '../utils/MCRequest';
+
+const eventbridge = new EventBridge();
+// eslint-disable-next-line @typescript-eslint/require-await
+const sendMCProhibition = async (mcRequests: MCRequest[]): Promise<SendResponse> => {
+  const sendResponse: SendResponse = {
+    SuccessCount: 0,
+    FailCount: 0,
+  };
+  for (let i = 0; i < mcRequests.length; i++) {
+    const entry: EventEntry = {
+      Source: process.env.AWS_EVENT_BUS_SOURCE_MC,
+      Detail: `{ "testResult": "${JSON.stringify(mcRequests[i]).replace(/"/g, '\\"')}" }`,
+      DetailType: 'CVS MC Clear Prohibition',
+      EventBusName: process.env.AWS_EVENT_BUS_NAME,
+      Time: new Date(),
+    };
+
+    console.log(JSON.stringify(entry.Detail));
+    const params: Entries = {
+      Entries: [],
+    };
+    params.Entries.push(entry);
+    try {
+      logger.debug(`event about to be sent: ${JSON.stringify(params)}`);
+      if (mcRequests[i].vehicleIdentifier !== '') {
+        // TODO comment out when testing
+        // eslint-disable-next-line no-await-in-loop
+        const result = await eventbridge.putEvents(params).promise();
+        logger.info(
+          `${result.Entries.length} event sent to eventbridge.`,
+        );
+        sendResponse.SuccessCount++;
+      } else {
+        logger.info(`Event not sent as test is not completed { ID: ${mcRequests[i].vehicleIdentifier} }`);
+        sendResponse.FailCount++;
+      }
+    } catch (error) {
+      logger.error('', error);
+      sendResponse.FailCount++;
+    }
+  }
+  return sendResponse;
+};
+
+export { sendMCProhibition };

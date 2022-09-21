@@ -1,0 +1,700 @@
+{
+  "eventID": "mock-id",
+  "eventName": "MODIFY",
+  "eventVersion": "1.1",
+  "eventSource": "aws:dynamodb",
+  "awsRegion": "eu-west-1",
+  "dynamodb": {
+      "ApproximateCreationDateTime": 1641807422,
+      "Keys": {
+          "vin": {
+              "S": "XMGDE02FS0H012303"
+          },
+          "testResultId": {
+              "S": "9"
+          }
+      },
+      "NewImage": {
+          "testerStaffId": {
+              "S": "2"
+          },
+          "testStartTimestamp": {
+              "S": "2019-01-14T10:36:33.987Z"
+          },
+          "odometerReadingUnits": {
+              "S": "kilometres"
+          },
+          "testEndTimestamp": {
+              "S": "2019-01-14T10:36:33.987Z"
+          },
+          "testStatus": {
+              "S": "submitted"
+          },
+          "testTypes": {
+              "L": [
+                {
+              "M": {
+                "prohibitionIssued": {
+                    "BOOL": false
+                },
+                "testCode": {
+                    "S": "aas"
+                },
+                "testNumber": {
+                    "S": "1"
+                },
+                "lastUpdatedAt": {
+                    "S": "2019-02-23T08:47:59.269Z"
+                },
+                "testAnniversaryDate": {
+                    "S": "2019-12-22T08:47:59.749Z"
+                },
+                "testTypeClassification": {
+                    "S": "Annual With Certificate"
+                },
+                "customDefects": {
+                    "L": [
+                        {
+                            "M": {
+                                "defectNotes": {
+                                    "S": "some defect noe"
+                                },
+                                "referenceNumber": {
+                                    "S": "abcd"
+                                },
+                                "defectName": {
+                                    "S": "Some custom defect"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "additionalCommentsForAbandon": {
+                    "S": "none"
+                },
+                "numberOfSeatbeltsFitted": {
+                    "N": "2"
+                },
+                "testTypeEndTimestamp": {
+                    "S": "2019-01-14T10:36:33.987Z"
+                },
+                "reasonForAbandoning": {
+                    "S": "none"
+                },
+                "lastSeatbeltInstallationCheckDate": {
+                    "S": "2019-01-14"
+                },
+                "deletionFlag": {
+                    "BOOL": true
+                },
+                "createdAt": {
+                    "S": "2019-02-22T08:47:59.269Z"
+                },
+                "testTypeId": {
+                    "S": "1"
+                },
+                "secondaryCertificateNumber": {
+                    "S": "1234"
+                },
+                "testTypeStartTimestamp": {
+                    "S": "2019-01-14T10:36:33.987Z"
+                },
+                "testTypeName": {
+                    "S": "Annual test"
+                },
+                "seatbeltInstallationCheckDate": {
+                    "BOOL": true
+                },
+                "additionalNotesRecorded": {
+                    "S": "VEHICLE FRONT REGISTRATION PLATE MISSING"
+                },
+                "defects": {
+                    "L": [
+                        {
+                            "M": {
+                                "deficiencyCategory": {
+                                    "S": "major"
+                                },
+                                "deficiencyText": {
+                                    "S": "missing."
+                                },
+                                "prs": {
+                                    "BOOL": false
+                                },
+                                "additionalInformation": {
+                                    "M": {
+                                        "notes": {
+                                            "S": "None"
+                                        },
+                                        "location": {
+                                            "M": {
+                                                "axleNumber": {
+                                                    "NULL": true
+                                                },
+                                                "horizontal": {
+                                                    "NULL": true
+                                                },
+                                                "vertical": {
+                                                    "NULL": true
+                                                },
+                                                "longitudinal": {
+                                                    "S": "front"
+                                                },
+                                                "rowNumber": {
+                                                    "NULL": true
+                                                },
+                                                "lateral": {
+                                                    "NULL": true
+                                                },
+                                                "seatNumber": {
+                                                    "NULL": true
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "itemNumber": {
+                                    "N": "1"
+                                },
+                                "deficiencyRef": {
+                                    "S": "1.1.a"
+                                },
+                                "stdForProhibition": {
+                                    "BOOL": false
+                                },
+                                "deficiencySubId": {
+                                    "NULL": true
+                                },
+                                "imDescription": {
+                                    "S": "Registration Plate"
+                                },
+                                "deficiencyId": {
+                                    "S": "a"
+                                },
+                                "itemDescription": {
+                                    "S": "A registration plate:"
+                                },
+                                "imNumber": {
+                                    "N": "1"
+                                }
+                            }
+                        }
+                    ]
+                },
+                "name": {
+                    "S": "Annual test"
+                },
+                "certificateLink": {
+                    "S": "http://dvsagov.co.uk"
+                },
+                "testResult": {
+                    "S": "fail"
+                }
+            }
+          }
+          ]
+          },
+          "systemNumber": {
+              "S": "1120"
+          },
+          "vehicleClass": {
+              "M": {
+                  "code": {
+                      "S": "2"
+                  },
+                  "description": {
+                      "S": "motorbikes over 200cc or with a sidecar"
+                  }
+              }
+          },
+          "testResultId": {
+              "S": "9"
+          },
+          "vehicleSize": {
+              "S": "small"
+          },
+          "vin": {
+              "S": "XMGDE02FS0H012303"
+          },
+          "noOfAxles": {
+              "N": "2"
+          },
+          "testStationName": {
+              "S": "Rowe, Wunsch and Wisoky"
+          },
+          "vehicleId": {
+              "S": "JY58FPP"
+          },
+          "countryOfRegistration": {
+              "S": "united kingdom"
+          },
+          "vehicleType": {
+              "S": "psv"
+          },
+          "preparerId": {
+              "S": "ak4434"
+          },
+          "preparerName": {
+              "S": "Durrell Vehicles Limited"
+          },
+          "odometerReading": {
+              "N": "100000"
+          },
+          "vehicleConfiguration": {
+              "S": "rigid"
+          },
+          "testStationType": {
+              "S": "gvts"
+          },
+          "reasonForCancellation": {
+              "S": "none"
+          },
+          "testerName": {
+              "S": "Dorel"
+          },
+          "deletionFlag": {
+              "BOOL": false
+          },
+          "vrm": {
+              "S": "JY58FPP"
+          },
+          "testStationPNumber": {
+              "S": "P99005"
+          },
+          "numberOfSeats": {
+              "N": "45"
+          },
+          "testerEmailAddress": {
+              "S": "dorel.popescu@dvsagov.uk"
+          },
+          "euVehicleCategory": {
+              "S": "m2"
+          },
+          "numberOfWheelsDriven": {
+              "N": "3"
+          }
+      },
+      "OldImage": {
+          "testerStaffId": {
+              "S": "1"
+          },
+          "testStartTimestamp": {
+              "S": "2019-01-14T10:36:33.987Z"
+          },
+          "odometerReadingUnits": {
+              "S": "kilometres"
+          },
+          "testEndTimestamp": {
+              "S": "2019-01-14T10:36:33.987Z"
+          },
+          "testStatus": {
+              "S": "submitted"
+          },
+          "testTypes": {
+              "L": [
+                  {
+                      "M": {
+                          "prohibitionIssued": {
+                              "BOOL": false
+                          },
+                          "testCode": {
+                              "S": "aas"
+                          },
+                          "testNumber": {
+                              "S": "1"
+                          },
+                          "lastUpdatedAt": {
+                              "S": "2019-02-22T08:47:59.269Z"
+                          },
+                          "testAnniversaryDate": {
+                              "S": "2019-12-22T08:47:59.749Z"
+                          },
+                          "testTypeClassification": {
+                              "S": "Annual With Certificate"
+                          },
+                          "customDefects": {
+                              "L": [
+                                  {
+                                      "M": {
+                                          "defectNotes": {
+                                              "S": "some defect noe"
+                                          },
+                                          "referenceNumber": {
+                                              "S": "abcd"
+                                          },
+                                          "defectName": {
+                                              "S": "Some custom defect"
+                                          }
+                                      }
+                                  }
+                              ]
+                          },
+                          "additionalCommentsForAbandon": {
+                              "S": "none"
+                          },
+                          "numberOfSeatbeltsFitted": {
+                              "N": "2"
+                          },
+                          "testTypeEndTimestamp": {
+                              "S": "2019-01-14T10:36:33.987Z"
+                          },
+                          "reasonForAbandoning": {
+                              "S": "none"
+                          },
+                          "lastSeatbeltInstallationCheckDate": {
+                              "S": "2019-01-14"
+                          },
+                          "deletionFlag": {
+                              "BOOL": true
+                          },
+                          "createdAt": {
+                              "S": "2019-02-22T08:47:59.269Z"
+                          },
+                          "testTypeId": {
+                              "S": "1"
+                          },
+                          "secondaryCertificateNumber": {
+                              "S": "1234"
+                          },
+                          "testTypeStartTimestamp": {
+                              "S": "2019-01-14T10:36:33.987Z"
+                          },
+                          "testTypeName": {
+                              "S": "Annual test"
+                          },
+                          "seatbeltInstallationCheckDate": {
+                              "BOOL": true
+                          },
+                          "additionalNotesRecorded": {
+                              "S": "VEHICLE FRONT REGISTRATION PLATE MISSING"
+                          },
+                          "defects": {
+                              "L": [
+                                  {
+                                      "M": {
+                                          "deficiencyCategory": {
+                                              "S": "major"
+                                          },
+                                          "deficiencyText": {
+                                              "S": "missing."
+                                          },
+                                          "prs": {
+                                              "BOOL": false
+                                          },
+                                          "additionalInformation": {
+                                              "M": {
+                                                  "notes": {
+                                                      "S": "None"
+                                                  },
+                                                  "location": {
+                                                      "M": {
+                                                          "axleNumber": {
+                                                              "NULL": true
+                                                          },
+                                                          "horizontal": {
+                                                              "NULL": true
+                                                          },
+                                                          "vertical": {
+                                                              "NULL": true
+                                                          },
+                                                          "longitudinal": {
+                                                              "S": "front"
+                                                          },
+                                                          "rowNumber": {
+                                                              "NULL": true
+                                                          },
+                                                          "lateral": {
+                                                              "NULL": true
+                                                          },
+                                                          "seatNumber": {
+                                                              "NULL": true
+                                                          }
+                                                      }
+                                                  }
+                                              }
+                                          },
+                                          "itemNumber": {
+                                              "N": "1"
+                                          },
+                                          "deficiencyRef": {
+                                              "S": "1.1.a"
+                                          },
+                                          "stdForProhibition": {
+                                              "BOOL": false
+                                          },
+                                          "deficiencySubId": {
+                                              "NULL": true
+                                          },
+                                          "imDescription": {
+                                              "S": "Registration Plate"
+                                          },
+                                          "deficiencyId": {
+                                              "S": "a"
+                                          },
+                                          "itemDescription": {
+                                              "S": "A registration plate:"
+                                          },
+                                          "imNumber": {
+                                              "N": "1"
+                                          }
+                                      }
+                                  }
+                              ]
+                          },
+                          "name": {
+                              "S": "Annual test"
+                          },
+                          "certificateLink": {
+                              "S": "http://dvsagov.co.uk"
+                          },
+                          "testResult": {
+                              "S": "pass"
+                          }
+                      }
+                  },
+                  {
+                    "prohibitionIssued": {
+                        "BOOL": false
+                    },
+                    "testCode": {
+                        "S": "aas"
+                    },
+                    "testNumber": {
+                        "S": "1"
+                    },
+                    "lastUpdatedAt": {
+                        "S": "2019-02-23T08:47:59.269Z"
+                    },
+                    "testAnniversaryDate": {
+                        "S": "2019-12-22T08:47:59.749Z"
+                    },
+                    "testTypeClassification": {
+                        "S": "Annual With Certificate"
+                    },
+                    "customDefects": {
+                        "L": [
+                            {
+                                "M": {
+                                    "defectNotes": {
+                                        "S": "some defect noe"
+                                    },
+                                    "referenceNumber": {
+                                        "S": "abcd"
+                                    },
+                                    "defectName": {
+                                        "S": "Some custom defect"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "additionalCommentsForAbandon": {
+                        "S": "none"
+                    },
+                    "numberOfSeatbeltsFitted": {
+                        "N": "2"
+                    },
+                    "testTypeEndTimestamp": {
+                        "S": "2019-01-14T10:36:33.987Z"
+                    },
+                    "reasonForAbandoning": {
+                        "S": "none"
+                    },
+                    "lastSeatbeltInstallationCheckDate": {
+                        "S": "2019-01-14"
+                    },
+                    "deletionFlag": {
+                        "BOOL": true
+                    },
+                    "createdAt": {
+                        "S": "2019-02-22T08:47:59.269Z"
+                    },
+                    "testTypeId": {
+                        "S": "1"
+                    },
+                    "secondaryCertificateNumber": {
+                        "S": "1234"
+                    },
+                    "testTypeStartTimestamp": {
+                        "S": "2019-01-14T10:36:33.987Z"
+                    },
+                    "testTypeName": {
+                        "S": "Annual test"
+                    },
+                    "seatbeltInstallationCheckDate": {
+                        "BOOL": true
+                    },
+                    "additionalNotesRecorded": {
+                        "S": "VEHICLE FRONT REGISTRATION PLATE MISSING"
+                    },
+                    "defects": {
+                        "L": [
+                            {
+                                "M": {
+                                    "deficiencyCategory": {
+                                        "S": "major"
+                                    },
+                                    "deficiencyText": {
+                                        "S": "missing."
+                                    },
+                                    "prs": {
+                                        "BOOL": false
+                                    },
+                                    "additionalInformation": {
+                                        "M": {
+                                            "notes": {
+                                                "S": "None"
+                                            },
+                                            "location": {
+                                                "M": {
+                                                    "axleNumber": {
+                                                        "NULL": true
+                                                    },
+                                                    "horizontal": {
+                                                        "NULL": true
+                                                    },
+                                                    "vertical": {
+                                                        "NULL": true
+                                                    },
+                                                    "longitudinal": {
+                                                        "S": "front"
+                                                    },
+                                                    "rowNumber": {
+                                                        "NULL": true
+                                                    },
+                                                    "lateral": {
+                                                        "NULL": true
+                                                    },
+                                                    "seatNumber": {
+                                                        "NULL": true
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    },
+                                    "itemNumber": {
+                                        "N": "1"
+                                    },
+                                    "deficiencyRef": {
+                                        "S": "1.1.a"
+                                    },
+                                    "stdForProhibition": {
+                                        "BOOL": false
+                                    },
+                                    "deficiencySubId": {
+                                        "NULL": true
+                                    },
+                                    "imDescription": {
+                                        "S": "Registration Plate"
+                                    },
+                                    "deficiencyId": {
+                                        "S": "a"
+                                    },
+                                    "itemDescription": {
+                                        "S": "A registration plate:"
+                                    },
+                                    "imNumber": {
+                                        "N": "1"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "name": {
+                        "S": "Annual test"
+                    },
+                    "certificateLink": {
+                        "S": "http://dvsagov.co.uk"
+                    },
+                    "testResult": {
+                        "S": "pass"
+                    }
+                }
+              ]
+          },
+          "systemNumber": {
+              "S": "1120"
+          },
+          "vehicleClass": {
+              "M": {
+                  "code": {
+                      "S": "2"
+                  },
+                  "description": {
+                      "S": "motorbikes over 200cc or with a sidecar"
+                  }
+              }
+          },
+          "testResultId": {
+              "S": "9"
+          },
+          "vehicleSize": {
+              "S": "small"
+          },
+          "vin": {
+              "S": "XMGDE02FS0H012303"
+          },
+          "noOfAxles": {
+              "N": "2"
+          },
+          "testStationName": {
+              "S": "Rowe, Wunsch and Wisoky"
+          },
+          "vehicleId": {
+              "S": "JY58FPP"
+          },
+          "countryOfRegistration": {
+              "S": "united kingdom"
+          },
+          "vehicleType": {
+              "S": "psv"
+          },
+          "preparerId": {
+              "S": "ak4434"
+          },
+          "preparerName": {
+              "S": "Durrell Vehicles Limited"
+          },
+          "odometerReading": {
+              "N": "100000"
+          },
+          "vehicleConfiguration": {
+              "S": "rigid"
+          },
+          "testStationType": {
+              "S": "gvts"
+          },
+          "reasonForCancellation": {
+              "S": "none"
+          },
+          "testerName": {
+              "S": "Dorel"
+          },
+          "deletionFlag": {
+              "BOOL": false
+          },
+          "vrm": {
+              "S": "JY58FPP"
+          },
+          "testStationPNumber": {
+              "S": "P99006"
+          },
+          "numberOfSeats": {
+              "N": "45"
+          },
+          "testerEmailAddress": {
+              "S": "dorel.popescu@dvsagov.uk"
+          },
+          "euVehicleCategory": {
+              "S": "m2"
+          },
+          "numberOfWheelsDriven": {
+              "N": "3"
+          }
+      },
+      "SequenceNumber": "123456789",
+      "SizeBytes": 3701,
+      "StreamViewType": "NEW_AND_OLD_IMAGES"
+  },
+  "eventSourceARN": "mock-arn"
+}
