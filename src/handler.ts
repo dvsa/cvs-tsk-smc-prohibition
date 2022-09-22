@@ -7,7 +7,9 @@ import { sendMCProhibition } from './eventbridge/send';
 import logger from './observability/logger';
 import { MCRequest } from './utils/MCRequest';
 
-const { NODE_ENV, SERVICE, AWS_REGION, AWS_STAGE } = process.env;
+const {
+  NODE_ENV, SERVICE, AWS_REGION, AWS_STAGE,
+} = process.env;
 
 logger.debug(
   `\nRunning Service:\n '${SERVICE}'\n mode: ${NODE_ENV}\n stage: '${AWS_STAGE}'\n region: '${AWS_REGION}'\n\n`,
