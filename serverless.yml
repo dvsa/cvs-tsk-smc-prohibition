@@ -1,4 +1,4 @@
-service: cvs-tsk-pull-test-results
+service: cvs-tsk-smc-prohibition
 useDotenv: true
 
 plugins:
@@ -21,7 +21,7 @@ provider:
     SERVICE: ${self:service}
 
 functions:
-  pullTestResults:
+  smcProhibitionClearance:
     handler: src/handler.handler
     events:
       - cloudwatchEvent:
@@ -32,8 +32,7 @@ functions:
               - "Scheduled Event"
             detail:
               task:
-                - "smcProhibition"
-
+                - "smcProhibitionClearance"
 custom:
   dotenv:
     basePath: './'
