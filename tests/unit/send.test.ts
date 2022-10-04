@@ -115,7 +115,7 @@ describe('Events sent', () => {
   it('GIVEN one event to send WHEN sent THEN no event AND error is thrown', async () => {
     const mcRequests: MCRequest[] = [
       {
-        vehicleIdentifier: 'test',
+        vehicleIdentifier: '',
         testDate: '',
         vin: '',
         testResult: '',

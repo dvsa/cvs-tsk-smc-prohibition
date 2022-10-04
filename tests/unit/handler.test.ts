@@ -43,7 +43,7 @@ describe('Application entry', () => {
         expect(sendMCProhibition).toBeCalledTimes(1);
       });
     });
-    it('GIVEN event with filtered PNumber WHEN events are processed unsuccesfully THEN a callback error is returned.', async () => {
+    it('GIVEN event with filtered PNumber WHEN events are processed unsuccessfully THEN a callback error is returned.', async () => {
       event = {
         Records: [dynamoRecordFiltered as DynamoDBRecord],
       };
