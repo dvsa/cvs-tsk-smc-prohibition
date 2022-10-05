@@ -47,7 +47,6 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
  * @param vehicleType
  */
 export const calculateTrailFlag = (vehicleType: string): string => {
-
   if (vehicleType.toLowerCase() === 'psv') {
     return 'P';
   }
