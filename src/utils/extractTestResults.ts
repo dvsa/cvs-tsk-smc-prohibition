@@ -46,17 +46,15 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
  * This method is used to convert the trail flag into a single uppercase character
  * @param vehicleType
  */
-// eslint-disable-next-line consistent-return
 export const calculateTrailFlag = (vehicleType: string): string => {
-  if (vehicleType.toLowerCase() === 'hgv') {
-    return 'H';
-  }
+
   if (vehicleType.toLowerCase() === 'psv') {
     return 'P';
   }
-  if (vehicleType.toLowerCase() === 'trl') {
-    return 'T';
+  if (vehicleType.toLowerCase() === 'hgv') {
+    return 'H';
   }
+  return 'T';
 };
 
 /**

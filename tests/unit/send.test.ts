@@ -74,59 +74,11 @@ describe('Events sent', () => {
       .toEqual(mSendResponse);
   });
 
-  it('GIVEN one event to send WHEN sent THEN no event is returned.', async () => {
-    const mcRequests: MCRequest[] = [
-      {
-        vehicleIdentifier: '',
-        testDate: '14/01/2019',
-        vin: 'XMGDE02FS0H012303',
-        testResult: 'R',
-        hgvPsvTrailFlag: 'PSV',
-      },
-    ];
-
+  it('GIVEN one event to send WHEN sent THEN error is thrown', async () => {
     const mSendResponse: SendResponse = {
       SuccessCount: 0,
       FailCount: 1,
     };
-    await expect(sendMCProhibition(mcRequests))
-      .resolves
-      .toEqual(mSendResponse);
-  });
-
-  it('GIVEN one event to send WHEN sent THEN no event AND event not sent', async () => {
-    const mcRequests: MCRequest[] = [
-      {
-        vehicleIdentifier: '',
-        testDate: '14/01/2019',
-        vin: 'XMGDE02FS0H012303',
-        testResult: 'R',
-        hgvPsvTrailFlag: 'PSV',
-      },
-    ];
-
-    const mSendResponse: SendResponse = {
-      SuccessCount: 0,
-      FailCount: 1,
-    };
-    await expect(sendMCProhibition(mcRequests)).resolves.toEqual(mSendResponse);
-  });
-
-  it('GIVEN one event to send WHEN sent THEN no event AND error is thrown', async () => {
-    const mcRequests: MCRequest[] = [
-      {
-        vehicleIdentifier: '',
-        testDate: '',
-        vin: '',
-        testResult: '',
-        hgvPsvTrailFlag: '',
-      },
-    ];
-
-    const mSendResponse: SendResponse = {
-      SuccessCount: 0,
-      FailCount: 1,
-    };
-    await expect(sendMCProhibition(mcRequests)).resolves.toEqual(mSendResponse);
+    await expect(sendMCProhibition(null)).resolves.toEqual(mSendResponse);
   });
 });

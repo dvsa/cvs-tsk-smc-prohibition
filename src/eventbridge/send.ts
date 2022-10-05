@@ -12,36 +12,33 @@ const sendMCProhibition = async (mcRequests: MCRequest[]): Promise<SendResponse>
     SuccessCount: 0,
     FailCount: 0,
   };
-  for (let i = 0; i < mcRequests.length; i++) {
-    const entry: EventEntry = {
-      Source: process.env.AWS_EVENT_BUS_SOURCE_MC,
-      Detail: `{ "testResult": "${JSON.stringify(mcRequests[i]).replace(/"/g, '\\"')}" }`,
-      DetailType: 'CVS MC Clear Prohibition',
-      EventBusName: process.env.AWS_EVENT_BUS_NAME,
-      Time: new Date(),
-    };
-    const params: Entries = {
-      Entries: [],
-    };
-    params.Entries.push(entry);
-    try {
+  try {
+    for (let i = 0; i < mcRequests.length; i++) {
+
+      const entry: EventEntry = {
+        Source: process.env.AWS_EVENT_BUS_SOURCE_MC,
+        Detail: `{ "testResult": "${JSON.stringify(mcRequests[i]).replace(/"/g, '\\"')}" }`,
+        DetailType: 'CVS MC Clear Prohibition',
+        EventBusName: process.env.AWS_EVENT_BUS_NAME,
+        Time: new Date(),
+      };
+      const params: Entries = {
+        Entries: [],
+      };
+      params.Entries.push(entry);
+
       logger.debug(`event about to be sent: ${JSON.stringify(params)}`);
-      if (mcRequests[i].vehicleIdentifier !== '') {
-        // TODO comment out when testing
-        // const result = await eventbridge.putEvents(params).promise();
-        // logger.info(
-        //   `${result.Entries.length} event sent to eventbridge.`,
-        // );
-        console.log('event send to eventbridge');
-        sendResponse.SuccessCount++;
-      } else {
-        logger.info(`Event not sent as test is not completed { ID: ${mcRequests[i].vehicleIdentifier} }`);
-        sendResponse.FailCount++;
-      }
-    } catch (error) {
-      logger.error('', error);
-      sendResponse.FailCount++;
+      // TODO comment out when testing
+      // const result = await eventbridge.putEvents(params).promise();
+      // logger.info(
+      //   `${result.Entries.length} event sent to eventbridge.`,
+      // );
+      console.log('event send to eventbridge');
+      sendResponse.SuccessCount++;
     }
+  } catch (error) {
+    logger.error('', error);
+    sendResponse.FailCount++;
   }
   return sendResponse;
 };
