@@ -23,12 +23,10 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
       .filter((x) => (x.testResult === ('pass') || x.testResult === ('prs')))
       .filter(() => (data.vehicleType === 'hgv') || data.vehicleType === 'psv' || data.vehicleType === 'trl')
       .filter(() => data.testStatus === 'submitted')
-      .map((x) => ({
+      .map((x: TestActivity) => ({
         vehicleIdentifier: data.vrm,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         testDate: isoDateFormatter(x.testTypeEndTimestamp),
         vin: data.vin,
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         testResult: calculateTestResult(x),
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         hgvPsvTrailFlag: calculateTrailFlag(data.vehicleType),

@@ -13,10 +13,10 @@ const sendMCProhibition = async (mcRequests: MCRequest[]): Promise<SendResponse>
     FailCount: 0,
   };
   try {
-    for (let i = 0; i < mcRequests.length; i++) {
+    mcRequests.forEach((x) => {
       const entry: EventEntry = {
         Source: process.env.AWS_EVENT_BUS_SOURCE_MC,
-        Detail: `{ "testResult": "${JSON.stringify(mcRequests[i]).replace(/"/g, '\\"')}" }`,
+        Detail: `{ "testResult": "${JSON.stringify(x).replace(/"/g, '\\"')}" }`,
         DetailType: 'CVS MC Clear Prohibition',
         EventBusName: process.env.AWS_EVENT_BUS_NAME,
         Time: new Date(),
@@ -34,7 +34,7 @@ const sendMCProhibition = async (mcRequests: MCRequest[]): Promise<SendResponse>
       // );
       console.log('event send to eventbridge');
       sendResponse.SuccessCount++;
-    }
+    });
   } catch (error) {
     logger.error('', error);
     sendResponse.FailCount++;
