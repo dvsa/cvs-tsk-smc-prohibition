@@ -16,7 +16,6 @@ import logger from '../observability/logger';
 export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
   try {
     const data = DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
-    logger.info(`Starting MC processing for ${JSON.stringify(data.vehicleId)}`);
     const mcRequest: MCRequest[] = data.testTypes
       // eslint-disable-next-line @typescript-eslint/no-unsafe-return
       .filter((x) => x.testTypeName.toLowerCase().includes('prohibition clearance'))
