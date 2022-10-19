@@ -16,7 +16,7 @@ const sendMCProhibition = async (mcRequests: MCRequest[]): Promise<SendResponse>
     for (let i = 0; i < mcRequests.length; i++) {
       const x = mcRequests[i];
       const entry: EventEntry = {
-        Source: process.env.AWS_EVENT_BUS_SOURCE_MC,
+        Source: process.env.AWS_EVENT_BUS_SOURCE,
         Detail: `{ "testResult": "${JSON.stringify(x).replace(/"/g, '\\"')}" }`,
         DetailType: 'CVS MC Clear Prohibition',
         EventBusName: process.env.AWS_EVENT_BUS_NAME,
