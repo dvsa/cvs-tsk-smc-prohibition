@@ -28,7 +28,7 @@ describe('Application entry', () => {
   });
 
   describe('Handler', () => {
-    it('GIVEN event with filtered PNumber WHEN events are processed succesfully THEN a callback result is returned.', async () => {
+    it('GIVEN event WHEN events are processed successfully THEN a callback result is returned.', async () => {
       event = {
         Records: [dynamoRecordFiltered as DynamoDBRecord],
       };
@@ -43,7 +43,7 @@ describe('Application entry', () => {
         expect(sendMCProhibition).toBeCalledTimes(1);
       });
     });
-    it('GIVEN event with filtered PNumber WHEN events are processed unsuccessfully THEN a callback error is returned.', async () => {
+    it('GIVEN event WHEN events are processed unsuccessfully THEN a callback error is returned.', async () => {
       event = {
         Records: [dynamoRecordFiltered as DynamoDBRecord],
       };
@@ -54,7 +54,7 @@ describe('Application entry', () => {
         expect(sendMCProhibition).toBeCalledTimes(1);
       });
     });
-    it('GIVEN event with non filtered PNumber WHEN events are processed THEN log outputted.', async () => {
+    it('GIVEN event WHEN events are processed THEN log outputted.', async () => {
       event = {
         Records: [dynamoRecordNonFiltered as DynamoDBRecord],
       };

@@ -31,11 +31,9 @@ const handler = async (event: DynamoDBStreamEvent, _context: Context, callback: 
         logger.error('Error when clearing the MC prohibition:', e);
       }
     }
-
-    logger.info('Data processed successfully.');
     callback(null, 'Data processed successfully.');
   } catch (error) {
-    logger.info('Data processed unsuccessfully.');
+    logger.error('Data processed unsuccessfully.');
     logger.error('', error);
     callback(new Error('Data processed unsuccessfully.'));
   }

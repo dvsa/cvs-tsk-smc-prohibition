@@ -25,7 +25,6 @@
     "test:integration:watch": "echo 'integration tests --watch to be added'",
     "test:integration:coverage": "cross-env echo 'integration tests coverage to be added'",
     "test": "npm-run-all lint test:unit:coverage test:integration:coverage",
-    "mock-server": "jsonsls run ./data/db.json",
     "audit": "npm audit --prod",
     "lint:analyse": "eslint . --ext js,ts --fix",
     "lint:report": "npm run lint:analyse -- -f json -o reports/eslint/eslint-report.json",
@@ -37,11 +36,7 @@
     "build": "tsc --rootDir ./ --outDir .build --sourceMap false && npm run build:copy && rimraf .build/tests",
     "build:copy": "find src -type f \\( -name \"*.yml\" -or -name \"*.json\" \\) | cpio -pdm .build && find tests -type f \\( -name \"*.yml\" -or -name \"*.json\" \\)  | cpio -pdm .build",
     "sonar-scanner": "sonar-scanner",
-    "package": "mkdir ${ZIP_NAME} && cp package.json package-lock.json ${ZIP_NAME}/ && cp -r .build/src/* ${ZIP_NAME}/ && cd ${ZIP_NAME} && npm ci --production && rm package.json package-lock.json && zip -qr ../${ZIP_NAME}.zip . && cd .. && rimraf ${ZIP_NAME}",
-    "release": "semantic-release",
-    "prerelease": "semantic-release --dry-run",
-    "dependencies:check": "ncu",
-    "tools-setup": "echo 'nothing to do for now'"
+    "package": "mkdir ${ZIP_NAME} && cp package.json package-lock.json ${ZIP_NAME}/ && cp -r .build/src/* ${ZIP_NAME}/ && cd ${ZIP_NAME} && npm ci --production && rm package.json package-lock.json && zip -qr ../${ZIP_NAME}.zip . && cd .. && rimraf ${ZIP_NAME}"
   },
   "dependencies": {
     "aws-lambda": "1.0.6",
