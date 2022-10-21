@@ -63,7 +63,7 @@ describe('Application entry', () => {
       await handler(event, null, (error: string | Error, result: string) => {
         expect(error).toBeNull();
         expect(result).toEqual('Data processed successfully.');
-        expect(consoleSpy).toBeCalledTimes(3);
+        expect(consoleSpy).toBeCalledTimes(2);
       });
     });
   });
