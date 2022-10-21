@@ -26,15 +26,9 @@ const sendMCProhibition = async (mcRequests: MCRequest[]): Promise<SendResponse>
         Entries: [],
       };
       params.Entries.push(entry);
-
-      logger.debug(`event about to be sent: ${JSON.stringify(params)}`);
       // eslint-disable-next-line no-await-in-loop
       const result = await eventbridge.putEvents(params).promise();
       logger.info(JSON.stringify(result));
-      logger.info(
-        `${result.Entries.length} event sent to eventbridge.`,
-      );
-      console.log('event send to eventbridge');
       sendResponse.SuccessCount++;
     }
   } catch (error) {
