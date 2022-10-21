@@ -4,7 +4,7 @@
 import { DynamoDBRecord } from 'aws-lambda';
 import { DynamoDB } from 'aws-sdk';
 import { DateTime } from 'luxon';
-import { TestActivity } from './testActivity';
+import { TestResult } from './testResult';
 import { MCRequest } from './MCRequest';
 import logger from '../observability/logger';
 
@@ -22,7 +22,7 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
       .filter((x) => (x.testResult === ('pass') || x.testResult === ('prs')))
       .filter(() => (data.vehicleType === 'hgv') || data.vehicleType === 'psv' || data.vehicleType === 'trl')
       .filter(() => data.testStatus === 'submitted')
-      .map((x: TestActivity) => ({
+      .map((x: TestResult) => ({
         vehicleIdentifier: data.vrm,
         testDate: isoDateFormatter(x.testTypeEndTimestamp),
         vin: data.vin,
@@ -59,7 +59,7 @@ export const calculateTrailFlag = (vehicleType: string): string => {
  * This method is used to change the test result to be a single, uppercase character
  * @param testActivity
  */
-export const calculateTestResult = (testActivity: TestActivity): string => (testActivity.testResult.toLowerCase() === 'pass' ? 'S' : 'R');
+export const calculateTestResult = (testResult: TestResult): string => (testResult.testResult.toLowerCase() === 'pass' ? 'S' : 'R');
 
 /**
  * This method is used to change the format of an iso string to be formatted as yyyy/MM/dd
