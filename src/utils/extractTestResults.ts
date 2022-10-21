@@ -29,7 +29,9 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
         testResult: calculateTestResult(x),
         // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
         hgvPsvTrailFlag: calculateTrailFlag(data.vehicleType),
+        testResultId: data.testResultId,
       }));
+    console.log(JSON.stringify(mcRequest));
     logger.info(`Successfully processed: ${JSON.stringify(mcRequest)}`);
     return mcRequest;
   } catch (e) {
