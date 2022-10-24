@@ -27,11 +27,9 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
         testDate: isoDateFormatter(x.testTypeEndTimestamp),
         vin: data.vin,
         testResult: calculateTestResult(x),
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
-        hgvPsvTrailFlag: calculateTrailFlag(data.vehicleType),
+        hgvPsvTrailFlag: data.vehicleType.charAt(0).toUpperCase(),
         testResultId: data.testResultId,
       }));
-    console.log(JSON.stringify(mcRequest));
     logger.info(`Successfully processed: ${JSON.stringify(mcRequest)}`);
     return mcRequest;
   } catch (e) {
@@ -42,22 +40,8 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
 };
 
 /**
- * This method is used to convert the trail flag into a single uppercase character
- * @param vehicleType
- */
-export const calculateTrailFlag = (vehicleType: string): string => {
-  if (vehicleType.toLowerCase() === 'psv') {
-    return 'P';
-  }
-  if (vehicleType.toLowerCase() === 'hgv') {
-    return 'H';
-  }
-  return 'T';
-};
-
-/**
  * This method is used to change the test result to be a single, uppercase character
- * @param testActivity
+ * @param testResult
  */
 export const calculateTestResult = (testResult: TestResult): string => (testResult.testResult.toLowerCase() === 'pass' ? 'S' : 'R');
 
