@@ -10,9 +10,7 @@ import { MCRequest } from './utils/MCRequest';
 import { SendResponse } from './eventbridge/SendResponse';
 import { HTTPError } from './utils/HTTPError';
 
-const {
-  NODE_ENV, SERVICE, AWS_REGION, AWS_STAGE,
-} = process.env;
+const { NODE_ENV, SERVICE, AWS_REGION, AWS_STAGE } = process.env;
 
 logger.debug(
   `\nRunning Service:\n '${SERVICE}'\n mode: ${NODE_ENV}\n stage: '${AWS_STAGE}'\n region: '${AWS_REGION}'\n\n`,
@@ -32,7 +30,6 @@ const handler = async (event: DynamoDBStreamEvent, _context: Context, callback: 
     }
     callback(null, 'Data processed successfully.');
   } catch (error: unknown) {
-
     logger.error('Data processed unsuccessfully.');
     logger.error('', error);
     callback('', (<HTTPError>error).body);

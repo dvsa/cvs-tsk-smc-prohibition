@@ -5,6 +5,7 @@ import dynamoEventMultipleTests from './data/dynamoEventMultipleTestTypes.json';
 import dynamoEventMultipleTestTypesPassAndPrs from './data/dynamoEventMultipleTestTypesPassAndPrs.json';
 import dynamoEventCancelled from './data/dynamoEventCancelled.json';
 import { MCRequest } from '../../src/utils/MCRequest';
+import { HTTPError } from '../../src/utils/HTTPError';
 
 describe('extractTestResults', () => {
   let DYNAMO_DATA: DynamoDBRecord;
@@ -25,13 +26,19 @@ describe('extractTestResults', () => {
     MC_RESULT = extractMCTestResults(DYNAMO_DATA);
     expect(MC_RESULT).toHaveLength(1);
   });
-  it('aGIVEN data with two test types WHEN test results are extracted into events THEN expect one mc requests are to be generated', () => {
+  it('GIVEN data with two test types WHEN test results are extracted into events THEN expect one mc requests are to be generated', () => {
     DYNAMO_DATA = dynamoEventWCert as DynamoDBRecord;
     MC_RESULT = extractMCTestResults(DYNAMO_DATA);
     expect(MC_RESULT).toHaveLength(1);
   });
-  it('GIVEN null WHEN test results are extracted into events THEN produce error', () => {
-    MC_RESULT = extractMCTestResults(null);
-    expect(MC_RESULT).toBeNull();
+  it('GIVEN data with two test types WHEN test results are extracted into events THEN expect a validation error', () => {
+    DYNAMO_DATA = dynamoEventWCert as DynamoDBRecord;
+    DYNAMO_DATA.dynamodb.NewImage.vin = null;
+
+    try {
+      extractMCTestResults(DYNAMO_DATA) as unknown as HTTPError;
+    } catch (e) {
+      expect(e.body.errors[0]).toEqual('"vin" is required');
+    }
   });
 });
