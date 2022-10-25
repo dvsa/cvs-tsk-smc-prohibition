@@ -7,6 +7,8 @@ import { DateTime } from 'luxon';
 import { TestResult } from './testResult';
 import { MCRequest } from './MCRequest';
 import logger from '../observability/logger';
+import { ValidationUtil } from './ValidationUtil';
+import { HTTPError } from './HTTPError';
 
 /**
  * This is used to extract the relevant fields from the test record that is
@@ -14,29 +16,31 @@ import logger from '../observability/logger';
  * @param record
  */
 export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
-  try {
-    const data = DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
-    const mcRequest: MCRequest[] = data.testTypes
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-return
-      .filter((x) => x.testTypeName.toLowerCase().includes('prohibition clearance'))
-      .filter((x) => (x.testResult === ('pass') || x.testResult === ('prs')))
-      .filter(() => (data.vehicleType === 'hgv') || data.vehicleType === 'psv' || data.vehicleType === 'trl')
-      .filter(() => data.testStatus === 'submitted')
-      .map((x: TestResult) => ({
-        vehicleIdentifier: data.vrm,
-        testDate: isoDateFormatter(x.testTypeEndTimestamp),
-        vin: data.vin,
-        testResult: calculateTestResult(x),
-        hgvPsvTrailFlag: data.vehicleType.charAt(0).toUpperCase(),
-        testResultId: data.testResultId,
-      }));
-    logger.info(`Successfully processed: ${JSON.stringify(mcRequest)}`);
-    return mcRequest;
-  } catch (e) {
-    logger.error('Unsuccessfully processed');
-    logger.error(e);
-    return null;
+  const data = DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
+  const mcRequest: MCRequest[] = data.testTypes
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
+    .filter((x) => x.testTypeName.toLowerCase().includes('prohibition clearance'))
+    .filter((x) => (x.testResult === ('pass') || x.testResult === ('prs')))
+    .filter(() => (data.vehicleType === 'hgv') || data.vehicleType === 'psv' || data.vehicleType === 'trl')
+    .filter(() => data.testStatus === 'submitted')
+    .map((x: TestResult) => ({
+      vehicleIdentifier: data.vrm,
+      testDate: isoDateFormatter(x.testTypeEndTimestamp),
+      vin: data.vin,
+      testResult: calculateTestResult(x),
+      hgvPsvTrailFlag: data.vehicleType.charAt(0).toUpperCase(),
+      testResultId: data.testResultId,
+    }));
+  const validationErrors = ValidationUtil.validateMcRequest(mcRequest);
+  console.log(validationErrors);
+  if (validationErrors && validationErrors.length) {
+    throw new HTTPError(400, {
+      errors: validationErrors,
+    });
   }
+
+  logger.info(`Successfully processed: ${JSON.stringify(mcRequest)}`);
+  return mcRequest;
 };
 
 /**

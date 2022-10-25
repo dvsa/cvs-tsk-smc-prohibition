@@ -66,5 +66,17 @@ describe('Application entry', () => {
         expect(consoleSpy).toBeCalledTimes(2);
       });
     });
+    it('GIVEN evasdfafafdent WHEN events are processed THEN log outputted.', async () => {
+      event = {
+        Records: [dynamoRecordNonFiltered as DynamoDBRecord],
+      };
+      // @ts-ignore
+      const consoleSpy = jest.spyOn(console._stdout, 'write');
+      await handler(event, null, (error: string | Error, result: string) => {
+        expect(error).toBeNull();
+        expect(result).toEqual('Data processed successfully.');
+        expect(consoleSpy).toBeCalledTimes(2);
+      });
+    });
   });
 });

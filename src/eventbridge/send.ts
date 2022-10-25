@@ -6,7 +6,6 @@ import logger from '../observability/logger';
 import { MCRequest } from '../utils/MCRequest';
 
 const eventbridge = new EventBridge();
-// eslint-disable-next-line @typescript-eslint/require-await
 const sendMCProhibition = async (mcRequests: MCRequest[]): Promise<SendResponse> => {
   const sendResponse: SendResponse = {
     SuccessCount: 0,
