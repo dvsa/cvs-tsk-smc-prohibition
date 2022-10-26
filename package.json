@@ -43,8 +43,8 @@
     "aws-lambda": "1.0.6",
     "aws-sdk": "2.1029.0",
     "dateformat": "4.6.3",
+    "joi": "17.6.4",
     "luxon": "3.0.3",
-    "joi": "^14.3.1",
     "winston": "3.3.3"
   },
   "devDependencies": {

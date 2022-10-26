@@ -1,6 +1,6 @@
-/* eslint-disable */
-//TODO fix eslint
-import * as Joi  from 'joi';
+import Joi from 'joi';
+
+
 // ignore for now
 export const mcRequestSchema = Joi.array().items({
   vehicleIdentifier: Joi.string().required(),

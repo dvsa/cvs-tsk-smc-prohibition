@@ -1,14 +1,10 @@
-/* eslint-disable */
-//TODO fix eslint
-
-/* eslint-disable no-restricted-syntax */
 import { DynamoDBStreamEvent, Context, Callback } from 'aws-lambda';
 import { extractMCTestResults } from './utils/extractTestResults';
 import { sendMCProhibition } from './eventbridge/send';
 import logger from './observability/logger';
 import { MCRequest } from './utils/MCRequest';
 import { SendResponse } from './eventbridge/SendResponse';
-import { HTTPError } from './utils/HTTPError';
+import { HttpError } from './errors/httpError';
 
 const { NODE_ENV, SERVICE, AWS_REGION, AWS_STAGE } = process.env;
 
@@ -25,14 +21,15 @@ const handler = async (event: DynamoDBStreamEvent, _context: Context, callback: 
       const mcRequests: MCRequest[] = extractMCTestResults(record);
       if (mcRequests != null) {
         // eslint-disable-next-line no-await-in-loop
-        return await sendMCProhibition(mcRequests);
+        return sendMCProhibition(mcRequests);
       }
     }
+
     callback(null, 'Data processed successfully.');
   } catch (error: unknown) {
     logger.error('Data processed unsuccessfully.');
     logger.error('', error);
-    callback('', (<HTTPError>error).body);
+    callback('', (<HttpError>error).body);
   }
 };
 

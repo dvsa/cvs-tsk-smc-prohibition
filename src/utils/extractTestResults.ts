@@ -8,7 +8,7 @@ import { TestResult } from './testResult';
 import { MCRequest } from './MCRequest';
 import logger from '../observability/logger';
 import { ValidationUtil } from './ValidationUtil';
-import { HTTPError } from './HTTPError';
+import { HttpError } from '../errors/httpError';
 
 /**
  * This is used to extract the relevant fields from the test record that is
@@ -18,7 +18,6 @@ import { HTTPError } from './HTTPError';
 export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
   const data = DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
   const mcRequest: MCRequest[] = data.testTypes
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-return
     .filter((x) => x.testTypeName.toLowerCase().includes('prohibition clearance'))
     .filter((x) => (x.testResult === ('pass') || x.testResult === ('prs')))
     .filter(() => (data.vehicleType === 'hgv') || data.vehicleType === 'psv' || data.vehicleType === 'trl')
@@ -34,7 +33,7 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
   const validationErrors = ValidationUtil.validateMcRequest(mcRequest);
   console.log(validationErrors);
   if (validationErrors && validationErrors.length) {
-    throw new HTTPError(400, {
+    throw new HttpError(400, {
       errors: validationErrors,
     });
   }
