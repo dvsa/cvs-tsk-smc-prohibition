@@ -25,13 +25,14 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
     .filter(() => (testResultUnmarshall.vehicleType === 'hgv') || testResultUnmarshall.vehicleType === 'psv' || testResultUnmarshall.vehicleType === 'trl')
     .filter(() => testResultUnmarshall.testStatus === 'submitted')
     .map((testResult: TestResult) => ({
-      vehicleIdentifier: testResultUnmarshall.vrm,
+      vehicleIdentifier: testResultUnmarshall.vehicleType === 'trl' ? testResultUnmarshall.trailerId : testResultUnmarshall.vrm,
       testDate: isoDateFormatter(testResult.testTypeEndTimestamp),
       vin: testResultUnmarshall.vin,
       testResult: calculateTestResult(testResult),
       hgvPsvTrailFlag: testResultUnmarshall.vehicleType.charAt(0).toUpperCase(),
       testResultId: testResultUnmarshall.testResultId,
     }));
+  console.log(mcRequest);
   const validationErrors = ValidationUtil.validateMcRequest(mcRequest);
   if (validationErrors && validationErrors.length) {
     throw new HTTPError(400, {

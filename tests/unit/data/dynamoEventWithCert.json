@@ -258,8 +258,8 @@
           "deletionFlag": {
               "BOOL": false
           },
-          "vrm": {
-              "S": "JY58FPP"
+          "trailerId": {
+              "S": "C108802"
           },
           "testStationPNumber": {
               "S": "P99006"
