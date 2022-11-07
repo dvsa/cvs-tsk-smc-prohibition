@@ -29,7 +29,9 @@ const handler = async (
     }
     callback(null, 'Data processed successfully.');
   } catch (error) {
-    callback(null, `Data processed unsuccessfully: ${JSON.stringify(error.body)}`);
+    error.body
+      ? callback(null, `Data processed unsuccessfully: ${JSON.stringify(error.body)}`)
+      : callback(null, `Data processed unsuccessfully: ${error}`);
   }
 };
 
