@@ -32,7 +32,6 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
       hgvPsvTrailFlag: testResultUnmarshall.vehicleType.charAt(0).toUpperCase(),
       testResultId: testResultUnmarshall.testResultId,
     }));
-  console.log(mcRequest);
   const validationErrors = ValidationUtil.validateMcRequest(mcRequest);
   if (validationErrors && validationErrors.length) {
     throw new HTTPError(400, {
