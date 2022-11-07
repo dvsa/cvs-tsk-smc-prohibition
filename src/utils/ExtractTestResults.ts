@@ -19,6 +19,7 @@ import { HTTPError } from './HTTPError';
  */
 export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
   const testResultUnmarshall = DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
+  logger.info(`Processing testResultId: ${JSON.stringify(testResultUnmarshall.testResultId)}`);
   const mcRequest: MCRequest[] = testResultUnmarshall.testTypes
     .filter((testType) => testType.testTypeName.toLowerCase().includes('prohibition clearance'))
     .filter((testType) => (testType.testResult === ('pass') || testType.testResult === ('prs')))
