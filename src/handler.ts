@@ -29,6 +29,7 @@ const handler = async (
     }
     callback(null, 'Data processed successfully.');
   } catch (error) {
+    logger.error(error)
     callback(null,`Data processed unsuccessfully: ${error}`);
   }
 };
