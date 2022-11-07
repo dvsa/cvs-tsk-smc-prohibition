@@ -45,8 +45,8 @@ describe('Application entry', () => {
       };
       mocked(sendMCProhibition).mockRejectedValue(new Error('Oh no!'));
       await handler(event, null, (error: string | Error, result: string) => {
-        expect(error).toEqual(new Error('Data processed unsuccessfully.'));
-        expect(result).toBeUndefined();
+        expect(error).toBeNull();
+        expect(result).toEqual('Data processed unsuccessfully: Error: Oh no!');
         expect(sendMCProhibition).toBeCalledTimes(1);
       });
     });

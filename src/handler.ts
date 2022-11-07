@@ -29,7 +29,7 @@ const handler = async (
     }
     callback(null, 'Data processed successfully.');
   } catch (error) {
-    callback(new Error(`Data processed unsuccessfully.`));
+    callback(null,`Data processed unsuccessfully: ${error}`);
   }
 };
 
