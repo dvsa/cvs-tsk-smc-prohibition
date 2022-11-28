@@ -1,0 +1,40 @@
+service: cvs-tsk-smc-prohibition
+useDotenv: true
+
+plugins:
+  - serverless-offline
+  - serverless-plugin-typescript
+  # - serverless-offline-aws-eventbridge
+
+provider:
+  profile: ${env:AWS_PROVIDER_PROFILE, 'default'}
+  name: aws
+  runtime: nodejs16.x
+  stage: ${env:NODE_ENV, 'local'}
+  region: ${env:AWS_REGION, 'local'}
+  # To load environment variables externally
+  # copy ./.env.example to ./.env.local.
+  environment:
+    SERVICE_VERSION: ${env:API_VERSION}
+    AWS_REGION: ${self:provider.region}
+    AWS_STAGE: ${self:provider.stage}
+    SERVICE: ${self:service}
+
+functions:
+  smcProhibitionClearance:
+    handler: src/handler.handler
+    events:
+      - cloudwatchEvent:
+          event:
+            source:
+              - "aws.events"
+            detail-type:
+              - "Scheduled Event"
+            detail:
+              task:
+                - "smcProhibitionClearance"
+custom:
+  dotenv:
+    basePath: './'
+  serverless-offline:
+    httpPort: ${env:AWS_SERVER_PORT, 3001}
