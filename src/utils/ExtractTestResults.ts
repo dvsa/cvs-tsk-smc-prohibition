@@ -2,6 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-unsafe-return */
+/* eslint-disable @typescript-eslint/no-unsafe-argument */
 
 import { DynamoDBRecord } from 'aws-lambda';
 import { DynamoDB } from 'aws-sdk';
@@ -11,6 +12,7 @@ import { MCRequest } from './MCRequest';
 import logger from '../observability/Logger';
 import { ValidationUtil } from './ValidationUtil';
 import { HTTPError } from './HTTPError';
+import { PROHIB_CLEARANCE_TEST_TYPE_IDS } from '../assets/Enums';
 
 /**
  * This is used to extract the relevant fields from the test record that is
@@ -21,7 +23,7 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
   const testResultUnmarshall = DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
   logger.info(`Processing testResultId: ${JSON.stringify(testResultUnmarshall.testResultId)}`);
   const mcRequest: MCRequest[] = testResultUnmarshall.testTypes
-    .filter((testType) => testType.testTypeName.toLowerCase().includes('prohibition clearance'))
+    .filter((testType) => PROHIB_CLEARANCE_TEST_TYPE_IDS.IDS.indexOf(testType.testTypeId))
     .filter((testType) => (testType.testResult === ('pass') || testType.testResult === ('prs')))
     .filter(() => (testResultUnmarshall.vehicleType === 'hgv') || testResultUnmarshall.vehicleType === 'psv' || testResultUnmarshall.vehicleType === 'trl')
     .filter(() => testResultUnmarshall.testStatus === 'submitted')

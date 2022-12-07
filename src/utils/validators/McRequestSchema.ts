@@ -1,9 +1,9 @@
 /* eslint-disable */
 
-import * as Joi  from 'joi';
+import * as Joi from 'joi';
 
 export const mcRequestSchema = Joi.array().items({
-  vehicleIdentifier: Joi.string().required(),
+  vehicleIdentifier: Joi.string().required().max(8),
   testDate: Joi.string().required(),
   vin: Joi.string().required(),
   testResult: Joi.string().required(),
