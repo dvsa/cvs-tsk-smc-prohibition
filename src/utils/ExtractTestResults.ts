@@ -23,7 +23,7 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
   const testResultUnmarshall = DynamoDB.Converter.unmarshall(record.dynamodb.NewImage);
   logger.info(`Processing testResultId: ${JSON.stringify(testResultUnmarshall.testResultId)}`);
   const mcRequest: MCRequest[] = testResultUnmarshall.testTypes
-    .filter((testType) => PROHIB_CLEARANCE_TEST_TYPE_IDS.IDS.indexOf(testType.testTypeId))
+    .filter((testType) => PROHIB_CLEARANCE_TEST_TYPE_IDS.IDS.includes(testType.testTypeId))
     .filter((testType) => (testType.testResult === ('pass') || testType.testResult === ('prs')))
     .filter(() => (testResultUnmarshall.vehicleType === 'hgv') || testResultUnmarshall.vehicleType === 'psv' || testResultUnmarshall.vehicleType === 'trl')
     .filter(() => testResultUnmarshall.testStatus === 'submitted')
