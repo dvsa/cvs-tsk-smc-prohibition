@@ -1,12 +1,12 @@
 /* eslint-disable */
 
-import {DynamoDBStreamEvent, Context, Callback} from 'aws-lambda';
-import {extractMCTestResults} from './utils/ExtractTestResults';
-import {sendMCProhibition} from './eventbridge/Send';
+import { DynamoDBStreamEvent, Context, Callback } from 'aws-lambda';
+import { extractMCTestResults } from './utils/ExtractTestResults';
+import { sendMCProhibition } from './eventbridge/Send';
 import logger from './observability/Logger';
-import {MCRequest} from './utils/MCRequest';
+import { MCRequest } from './utils/MCRequest';
 
-const {NODE_ENV, SERVICE, AWS_REGION, AWS_STAGE, SEND_TO_SMC} = process.env;
+const { NODE_ENV, SERVICE, AWS_REGION, AWS_STAGE, SEND_TO_SMC } = process.env;
 
 logger.debug(
   `\nRunning Service:\n '${SERVICE}'\n mode: ${NODE_ENV}\n stage: '${AWS_STAGE}'\n region: '${AWS_REGION}'\n 
@@ -47,4 +47,4 @@ const handler = async (
   }
 };
 
-export {handler};
+export { handler };
