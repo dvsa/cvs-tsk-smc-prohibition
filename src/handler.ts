@@ -43,7 +43,7 @@ const handler = async (
       }
     }
   } else {
-    logger.log(null, 'Incorrect environment variable present');
+    callback(null, 'Missing or not true environment variable present');
   }
 };
 

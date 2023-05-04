@@ -57,11 +57,9 @@ describe('Application entry', () => {
       };
       jest.spyOn(console, 'log');
 
-      await handler(event, null, (error: string) => {
+      await handler(event, null, (error: string | Error, result: string) => {
         expect(error).toBeNull();
-
-        expect(console.log).toBeCalledWith('Incorrect environment variable present');
-        expect(console.log).toBeCalledTimes(1);
+        expect(result).toEqual('Missing or not true environment variable present');
       });
     });
   });
