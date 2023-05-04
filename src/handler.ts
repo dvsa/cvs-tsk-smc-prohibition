@@ -10,14 +10,15 @@ const {NODE_ENV, SERVICE, AWS_REGION, AWS_STAGE, SEND_TO_SMC} = process.env;
 
 logger.debug(
   `\nRunning Service:\n '${SERVICE}'\n mode: ${NODE_ENV}\n stage: '${AWS_STAGE}'\n region: '${AWS_REGION}'\n 
-  Send to smc: '${SEND_TO_SMC}\n`);
+  Send to smc: '${SEND_TO_SMC}\n`,
+);
 
 const handler = async (
   event: DynamoDBStreamEvent,
   _context: Context,
   callback: Callback,
 ) => {
-  if (process.env.SEND_TO_SMC) {
+  if (process.env.SEND_TO_SMC == 'true') {
     try {
       logger.debug(`Function triggered with '${JSON.stringify(event)}'.`);
 
@@ -42,8 +43,8 @@ const handler = async (
       }
     }
   } else {
-    logger.log(null, 'No environment variable present')
+    logger.log(null, 'Incorrect environment variable present');
   }
-}
+};
 
 export {handler};

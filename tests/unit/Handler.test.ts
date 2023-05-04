@@ -50,5 +50,19 @@ describe('Application entry', () => {
         expect(sendMCProhibition).toBeCalledTimes(1);
       });
     });
+    it('When there is an invalid environment variable a log is produced', async () => {
+      process.env.SEND_TO_SMC = 'false';
+      event = {
+        Records: [dynamoRecordFiltered as DynamoDBRecord],
+      };
+      jest.spyOn(console, 'log');
+
+      await handler(event, null, (error: string) => {
+        expect(error).toBeNull();
+
+        expect(console.log).toBeCalledWith('Incorrect environment variable present');
+        expect(console.log).toBeCalledTimes(1);
+      });
+    });
   });
 });
