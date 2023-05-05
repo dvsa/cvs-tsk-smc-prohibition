@@ -18,7 +18,10 @@ const handler = async (
   _context: Context,
   callback: Callback,
 ) => {
-  if (process.env.SEND_TO_SMC == 'true') {
+  if (
+    process.env.SEND_TO_SMC != undefined &&
+    process.env.SEND_TO_SMC.toUpperCase() == 'TRUE'
+  ) {
     try {
       logger.debug(`Function triggered with '${JSON.stringify(event)}'.`);
 

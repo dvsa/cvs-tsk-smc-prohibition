@@ -39,7 +39,23 @@ describe('Application entry', () => {
         expect(sendMCProhibition).toBeCalledTimes(1);
       });
     });
+    it('When there is an event that gets processed successfully in proper case then no errors are produced', async () => {
+      event = {
+        Records: [dynamoRecordFiltered as DynamoDBRecord],
+      };
+      const sendResponse: SendResponse = {
+        SuccessCount: 1,
+        FailCount: 0,
+      };
+      mocked(sendMCProhibition).mockResolvedValue(sendResponse);
+      await handler(event, null, (error: string | Error, result: string) => {
+        expect(result).toEqual('Data processed successfully.');
+        expect(error).toBeNull();
+        expect(sendMCProhibition).toBeCalledTimes(1);
+      });
+    });
     it('When there is an error when sending the object and error is produced', async () => {
+      process.env.SEND_TO_SMC = 'True';
       event = {
         Records: [dynamoRecordFiltered as DynamoDBRecord],
       };
