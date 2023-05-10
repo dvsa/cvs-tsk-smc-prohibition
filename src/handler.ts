@@ -12,11 +12,10 @@ const handler = async (
 ) => {
   let { NODE_ENV, SERVICE, AWS_REGION, AWS_STAGE, SEND_TO_SMC } = process.env;
 
-  logger.info(
+  logger.debug(
     `\nRunning Service:\n '${SERVICE}'\n mode: ${NODE_ENV}\n stage: '${AWS_STAGE}'\n region: '${AWS_REGION}'\n 
   Send to smc: ${SEND_TO_SMC}\n`,
   );
-  console.log(SEND_TO_SMC)
   if (SEND_TO_SMC != undefined && SEND_TO_SMC.toUpperCase() === 'TRUE') {
     try {
       logger.debug(`Function triggered with '${JSON.stringify(event)}'.`);
