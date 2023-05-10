@@ -18,10 +18,7 @@ const handler = async (
   _context: Context,
   callback: Callback,
 ) => {
-  if (
-    SEND_TO_SMC != undefined &&
-    SEND_TO_SMC.toUpperCase() == 'TRUE'
-  ) {
+  if (SEND_TO_SMC != undefined && SEND_TO_SMC.toUpperCase() == 'TRUE') {
     try {
       logger.debug(`Function triggered with '${JSON.stringify(event)}'.`);
 
@@ -46,8 +43,13 @@ const handler = async (
       }
     }
   } else {
-    logger.info('Function not triggered, Missing or not true environment variable present');
-    callback(null, 'Function not triggered, Missing or not true environment variable present');
+    logger.info(
+      'Function not triggered, Missing or not true environment variable present',
+    );
+    callback(
+      null,
+      'Function not triggered, Missing or not true environment variable present',
+    );
   }
 };
 
