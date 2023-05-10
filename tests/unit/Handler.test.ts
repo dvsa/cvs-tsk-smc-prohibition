@@ -40,6 +40,7 @@ describe('Application entry', () => {
       });
     });
     it('When there is an event that gets processed successfully in proper case then no errors are produced', async () => {
+      process.env.SEND_TO_SMC = 'True';
       event = {
         Records: [dynamoRecordFiltered as DynamoDBRecord],
       };
@@ -75,7 +76,7 @@ describe('Application entry', () => {
 
       await handler(event, null, (error: string | Error, result: string) => {
         expect(error).toBeNull();
-        expect(result).toEqual('Missing or not true environment variable present');
+        expect(result).toEqual('Function not triggered, Missing or not true environment variable present');
       });
     });
   });
