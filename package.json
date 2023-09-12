@@ -4,7 +4,7 @@
   "description": "",
   "main": "src/handler.ts",
   "engines": {
-    "node": "16.*",
+    "node": "18.*",
     "npm": "8.*"
   },
   "husky": {
@@ -74,7 +74,7 @@
     "serverless": "3.22.0",
     "serverless-offline": "11.0.1",
     "serverless-offline-aws-eventbridge": "2.0.3",
-    "serverless-plugin-typescript": "2.1.0",
+    "serverless-plugin-typescript": "2.1.5",
     "supertest": "6.0.1",
     "ts-jest": "27.0.7",
     "ts-loader": "8.0.14",
