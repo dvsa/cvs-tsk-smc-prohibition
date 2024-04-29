@@ -20,11 +20,10 @@ import { ValidationUtil } from './ValidationUtil';
  * @param record
  */
 export const extractMCTestResults = (record: any): MCRequest[] => {
-  console.log('sent data', record.dynamodb);
   logger.info('sent data', record.dynamodb);
   const testResultUnmarshall = unmarshall(record.dynamodb.NewImage as { any });
+  console.log('unmarshalled', testResultUnmarshall);
   logger.info('unmarshalled:', testResultUnmarshall);
-  console.log(testResultUnmarshall.vin);
   logger.info(
     `Processing testResultId: ${JSON.stringify(
       testResultUnmarshall.testResultId,
