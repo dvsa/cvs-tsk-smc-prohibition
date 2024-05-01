@@ -1,12 +1,21 @@
-import { EventBridge } from 'aws-sdk';
-import { EventEntry } from './EventEntry';
-import { Entries } from './Entries';
-import { SendResponse } from './SendResponse';
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+// eslint-disable-next-line import/no-extraneous-dependencies
+import {
+  EventBridgeClient,
+  PutEventsCommand,
+} from '@aws-sdk/client-eventbridge';
 import logger from '../observability/Logger';
 import { MCRequest } from '../utils/MCRequest';
+import { Entries } from './Entries';
+import { EventEntry } from './EventEntry';
+import { SendResponse } from './SendResponse';
 
-const eventbridge = new EventBridge();
-const sendMCProhibition = async (mcRequests: MCRequest[]): Promise<SendResponse> => {
+const eventBridge = new EventBridgeClient();
+const sendMCProhibition = async (
+  mcRequests: MCRequest[],
+): Promise<SendResponse> => {
   const sendResponse: SendResponse = {
     SuccessCount: 0,
     FailCount: 0,
@@ -25,8 +34,9 @@ const sendMCProhibition = async (mcRequests: MCRequest[]): Promise<SendResponse>
         Entries: [],
       };
       params.Entries.push(entry);
+      const command = new PutEventsCommand(params);
       // eslint-disable-next-line no-await-in-loop
-      await eventbridge.putEvents(params).promise();
+      await eventBridge.send(command);
       sendResponse.SuccessCount++;
     }
   } catch (error) {
