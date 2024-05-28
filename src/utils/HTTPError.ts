@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable @typescript-eslint/no-unsafe-assignment */
 
 /**
@@ -13,7 +14,7 @@ export class HTTPError extends Error {
    * @param statusCode the HTTP status code
    * @param body - the response body
    */
-  constructor( statusCode: number, body: any) {
+  constructor(statusCode: number, body: any) {
     super();
     this.statusCode = statusCode;
     this.body = body;

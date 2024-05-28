@@ -3,8 +3,8 @@
 /* eslint-disable @typescript-eslint/restrict-template-expressions */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-
-import { mocked } from 'ts-jest/utils';
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable import/no-unresolved */
 import { DynamoDBRecord, DynamoDBStreamEvent } from 'aws-lambda';
 import { sendMCProhibition } from '../../src/eventbridge/Send';
 import { SendResponse } from '../../src/eventbridge/SendResponse';
@@ -18,7 +18,7 @@ jest.mock('../../src/utils/ExtractTestResults');
 
 describe('Application entry', () => {
   let event: DynamoDBStreamEvent;
-  mocked(extractMCTestResults).mockReturnValue(Array<MCRequest>());
+  jest.mocked(extractMCTestResults).mockReturnValue(Array<MCRequest>());
   afterEach(() => {
     jest.clearAllMocks();
   });
@@ -32,11 +32,11 @@ describe('Application entry', () => {
         SuccessCount: 1,
         FailCount: 0,
       };
-      mocked(sendMCProhibition).mockResolvedValue(sendResponse);
+      jest.mocked(sendMCProhibition).mockResolvedValue(sendResponse);
       await handler(event, null, (error: string | Error, result: string) => {
-        expect(result).toEqual('Data processed successfully.');
+        expect(result).toBe('Data processed successfully.');
         expect(error).toBeNull();
-        expect(sendMCProhibition).toBeCalledTimes(1);
+        expect(sendMCProhibition).toHaveBeenCalledTimes(1);
       });
     });
     it('When there is an event that gets processed successfully in proper case then no errors are produced', async () => {
@@ -48,11 +48,11 @@ describe('Application entry', () => {
         SuccessCount: 1,
         FailCount: 0,
       };
-      mocked(sendMCProhibition).mockResolvedValue(sendResponse);
+      jest.mocked(sendMCProhibition).mockResolvedValue(sendResponse);
       await handler(event, null, (error: string | Error, result: string) => {
-        expect(result).toEqual('Data processed successfully.');
+        expect(result).toBe('Data processed successfully.');
         expect(error).toBeNull();
-        expect(sendMCProhibition).toBeCalledTimes(1);
+        expect(sendMCProhibition).toHaveBeenCalledTimes(1);
       });
     });
     it('When there is an error when sending the object and error is produced', async () => {
@@ -60,11 +60,11 @@ describe('Application entry', () => {
       event = {
         Records: [dynamoRecordFiltered as DynamoDBRecord],
       };
-      mocked(sendMCProhibition).mockRejectedValue(new Error('Oh no!'));
+      jest.mocked(sendMCProhibition).mockRejectedValue(new Error('Oh no!'));
       await handler(event, null, (error: string | Error, result: string) => {
         expect(error).toBeNull();
-        expect(result).toEqual('Data processed unsuccessfully: Error: Oh no!');
-        expect(sendMCProhibition).toBeCalledTimes(1);
+        expect(result).toBe('Data processed unsuccessfully: Error: Oh no!');
+        expect(sendMCProhibition).toHaveBeenCalledTimes(1);
       });
     });
     it('When there is an invalid environment variable a log is produced', async () => {
@@ -76,7 +76,7 @@ describe('Application entry', () => {
 
       await handler(event, null, (error: string | Error, result: string) => {
         expect(error).toBeNull();
-        expect(result).toEqual('Function not triggered, Missing or not true environment variable present');
+        expect(result).toBe('Function not triggered, Missing or not true environment variable present');
       });
     });
   });
