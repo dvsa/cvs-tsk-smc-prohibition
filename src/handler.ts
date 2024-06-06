@@ -5,6 +5,7 @@ import { extractMCTestResults } from './utils/ExtractTestResults';
 import { sendMCProhibition } from './eventbridge/Send';
 import logger from './observability/Logger';
 import { MCRequest } from './utils/MCRequest';
+
 const handler = async (
   event: SQSEvent,
   _context: Context,
