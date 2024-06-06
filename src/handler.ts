@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { Context, Callback, SQSEvent } from 'aws-lambda';
+import { Context, Callback, SQSEvent, DynamoDBRecord } from 'aws-lambda';
 import { extractMCTestResults } from './utils/ExtractTestResults';
 import { sendMCProhibition } from './eventbridge/Send';
 import logger from './observability/Logger';
@@ -23,7 +23,7 @@ const handler = async (
 
       // We want to process these in sequence to maintain order of database changes
       for (const record of event.Records) {
-        const mcRequests: MCRequest[] = extractMCTestResults(JSON.parse(record.body).Message);
+        const mcRequests: MCRequest[] = extractMCTestResults(JSON.parse(JSON.parse(record.body).Message) as DynamoDBRecord);
         if (mcRequests != null) {
           await sendMCProhibition(mcRequests);
         }
