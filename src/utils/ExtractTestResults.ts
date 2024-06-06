@@ -22,9 +22,9 @@ import { ValidationUtil } from './ValidationUtil';
  * @param record
  */
 export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
-  console.log('unmarshalling...');
+  logger.debug('unmarshalling...');
   const testResultUnmarshall = unmarshall(record.dynamodb.NewImage as any);
-  console.log(testResultUnmarshall);
+  logger.debug(testResultUnmarshall);
   logger.info(
     `Processing testResultId: ${JSON.stringify(
       testResultUnmarshall.testResultId,

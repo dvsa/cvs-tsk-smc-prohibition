@@ -23,8 +23,9 @@ const handler = async (
 
       // We want to process these in sequence to maintain order of database changes
       for (const record of event.Records) {
+        logger.debug(record)
         const dynamoRecord: DynamoDBRecord = JSON.parse(JSON.parse(record.body).Message) as DynamoDBRecord;
-        console.log(dynamoRecord);
+        logger.debug(dynamoRecord)
         const mcRequests: MCRequest[] = extractMCTestResults(dynamoRecord);
         if (mcRequests != null) {
           await sendMCProhibition(mcRequests);
