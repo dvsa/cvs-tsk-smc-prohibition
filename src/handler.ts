@@ -22,7 +22,7 @@ const handler = async (
 
       // We want to process these in sequence to maintain order of database changes
       for (const record of event.Records) {
-        const mcRequests: MCRequest[] = extractMCTestResults(record);
+        const mcRequests: MCRequest[] = extractMCTestResults(JSON.parse(record.body).Message);
         if (mcRequests != null) {
           await sendMCProhibition(mcRequests);
         }
