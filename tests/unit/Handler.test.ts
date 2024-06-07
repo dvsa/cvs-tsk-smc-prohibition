@@ -1,10 +1,3 @@
-/* eslint-disable import/first */
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
-/* eslint-disable @typescript-eslint/restrict-template-expressions */
-/* eslint-disable no-underscore-dangle */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
-/* eslint-disable @typescript-eslint/no-unsafe-call */
-/* eslint-disable import/no-unresolved */
 import { SQSEvent } from 'aws-lambda';
 import { sendMCProhibition } from '../../src/eventbridge/Send';
 import { SendResponse } from '../../src/eventbridge/SendResponse';
@@ -20,20 +13,32 @@ describe('Application entry', () => {
   const event: SQSEvent = {
     Records: [
       {
-        'messageId': '1317d15-a23b2-4c68-a2da-67cc685dda5b',
-        'receiptHandle': 'aer3fiu34yufybuy34f334',
-        'body': JSON.stringify(dynamoRecordFiltered),
-        'attributes': {
-          'ApproximateReceiveCount': '1',
-          'SentTimestamp': '1717678383236',
-          'SenderId': 'AIDAISMY7JYY5F7RTT6AO',
-          'ApproximateFirstReceiveTimestamp': '1717678383247',
+        messageId: '1317d15-a23b2-4c68-a2da-67cc685dda5b',
+        receiptHandle: 'aer3fiu34yufybuy34f334',
+        body: JSON.stringify({
+          Type: 'Notification',
+          MessageId: 'some-message-id',
+          TopicArn: 'arn:aws:sns:us-east-1:123456789012:my-topic',
+          Subject: 'Test Subject',
+          Message: JSON.stringify({
+            eventID: '...',
+            eventName: 'INSERT',
+            dynamodb: {
+              NewImage: dynamoRecordFiltered.dynamodb.NewImage,
+            },
+          }),
+        }),
+        attributes: {
+          ApproximateReceiveCount: '1',
+          SentTimestamp: '1717678383236',
+          SenderId: 'AIDAISMY7JYY5F7RTT6AO',
+          ApproximateFirstReceiveTimestamp: '1717678383247',
         },
-        'messageAttributes': {},
-        'md5OfBody': '45bd1375e48194d7e1563cf20462d',
-        'eventSource': 'aws:sqs',
-        'eventSourceARN': 'arn:aws:sqs:eu-west-1:local:cvs-smc-prohibition-local-queue',
-        'awsRegion': 'eu-west-1',
+        messageAttributes: {},
+        md5OfBody: '45bd1375e48194d7e1563cf20462d',
+        eventSource: 'aws:sqs',
+        eventSourceARN: 'arn:aws:sqs:eu-west-1:local:cvs-smc-prohibition-local-queue',
+        awsRegion: 'eu-west-1',
       },
     ],
   };
@@ -48,43 +53,89 @@ describe('Application entry', () => {
   });
 
   describe('Handler', () => {
-    it('When there is an event that gets processed successfully no errors are produced', async () => {
+    process.env.SEND_TO_SMC = 'True';
+    it('should process a valid event successfully', async () => {
+      const expectedMCRequests: MCRequest[] = [
+        {
+          vehicleIdentifier: 'ABC1234',
+          testDate: '14/01/2019',
+          vin: 'XMGDE02FS0H012303',
+          testResult: 'P',
+          hgvPsvTrailFlag: 'T',
+          testResultId: 'some-test-result-id',
+        },
+      ];
 
+      jest.mocked(extractMCTestResults).mockReturnValue(expectedMCRequests);
       jest.mocked(sendMCProhibition).mockResolvedValue(sendResponse);
-      await handler(event, null, (error: string | Error, result: string) => {
-        expect(result).toBe('Data processed successfully.');
+
+      await handler(event, null, (error, result) => {
         expect(error).toBeNull();
-        expect(sendMCProhibition).toHaveBeenCalledTimes(1);
+        expect(result).toBe('Data processed successfully.');
+        expect(sendMCProhibition).toHaveBeenCalledWith(expectedMCRequests);
       });
     });
-
-    it('When there is an event that gets processed successfully in proper case then no errors are produced', async () => {
-      process.env.SEND_TO_SMC = 'True';
-      jest.mocked(sendMCProhibition).mockResolvedValue(sendResponse);
-      await handler(event, null, (error: string | Error, result: string) => {
-        expect(result).toBe('Data processed successfully.');
-        expect(error).toBeNull();
-        expect(sendMCProhibition).toHaveBeenCalledTimes(1);
+    it('should handle an empty notification gracefully', async () => {
+      const emptyNotificationEvent: SQSEvent = {
+        Records: [
+          {
+            messageId: '1317d15-a23b2-4c68-a2da-67cc685dda5b',
+            receiptHandle: 'aer3fiu34yufybuy34f334',
+            body: JSON.stringify({
+              Type: 'Notification',
+              MessageId: 'some-message-id',
+            }),
+            attributes: {
+              ApproximateReceiveCount: '1',
+              SentTimestamp: '1717678383236',
+              SenderId: 'AIDAISMY7JYY5F7RTT6AO',
+              ApproximateFirstReceiveTimestamp: '1717678383247',
+            },
+            messageAttributes: {},
+            md5OfBody: '45bd1375e48194d7e1563cf20462d',
+            eventSource: 'aws:sqs',
+            eventSourceARN: 'arn:aws:sqs:eu-west-1:local:cvs-smc-prohibition-local-queue',
+            awsRegion: 'eu-west-1',
+          },
+        ],
+      };
+      const resultPromise = new Promise((resolve, reject) => {
+        handler(emptyNotificationEvent, null, (error, result) => {
+          if (error) reject(error);
+          else resolve(result);
+        });
       });
+
+      await expect(resultPromise).resolves.toBe(
+        'Function not triggered, empty notification.',
+      );
+      expect(extractMCTestResults).not.toHaveBeenCalled();
+      expect(sendMCProhibition).not.toHaveBeenCalled();
     });
 
-    it('When there is an error when sending the object and error is produced', async () => {
+    it('should handle an error when sending the object', async () => {
       process.env.SEND_TO_SMC = 'True';
+      const expectedErrorMessage = 'Data processed unsuccessfully: Error: Oh no!';
       jest.mocked(sendMCProhibition).mockRejectedValue(new Error('Oh no!'));
-      await handler(event, null, (error: string | Error, result: string) => {
+
+      await handler(event, null, (error, result) => {
         expect(error).toBeNull();
-        expect(result).toBe('Data processed unsuccessfully: Error: Oh no!');
+        expect(result).toBe(expectedErrorMessage);
         expect(sendMCProhibition).toHaveBeenCalledTimes(1);
       });
     });
 
-    it('When there is an invalid environment variable a log is produced', async () => {
+    it('should handle an invalid environment variable', async () => {
       process.env.SEND_TO_SMC = 'false';
-      jest.spyOn(console, 'log');
-      await handler(event, null, (error: string | Error, result: string) => {
+
+      await handler(event, null, (error, result) => {
         expect(error).toBeNull();
         expect(result).toBe('Function not triggered, Missing or not true environment variable present');
+        expect(extractMCTestResults).not.toHaveBeenCalled();
+        expect(sendMCProhibition).not.toHaveBeenCalled();
       });
     });
   });
 });
+
+

@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { Context, Callback, SQSEvent, DynamoDBRecord } from 'aws-lambda';
+import { Context, Callback, SQSEvent, DynamoDBRecord, SNSMessage } from 'aws-lambda';
 import { extractMCTestResults } from './utils/ExtractTestResults';
 import { sendMCProhibition } from './eventbridge/Send';
 import logger from './observability/Logger';
@@ -21,16 +21,26 @@ const handler = async (
     try {
       logger.debug(`Function triggered with '${JSON.stringify(event)}'.`);
 
-      // We want to process these in sequence to maintain order of database changes
       for (const record of event.Records) {
         logger.debug(record)
-        const dynamoRecord: DynamoDBRecord = JSON.parse(record.body) as DynamoDBRecord;
-        logger.debug(dynamoRecord)
-        const mcRequests: MCRequest[] = extractMCTestResults(dynamoRecord);
-        if (mcRequests != null) {
-          await sendMCProhibition(mcRequests);
+        const snsRecord: SNSMessage = JSON.parse(record.body) as SNSMessage;
+        const dynamoDBEventStr = snsRecord.Message;
+        if (dynamoDBEventStr){
+          const dynamoDBEvent = JSON.parse(dynamoDBEventStr);
+          const dynamoRecord: DynamoDBRecord = dynamoDBEvent as DynamoDBRecord;
+          const mcRequests: MCRequest[] = extractMCTestResults(dynamoRecord);
+
+          if (mcRequests != null && mcRequests.length > 0) {
+            await sendMCProhibition(mcRequests);
+          } else {
+            logger.info(`No relevant MC test results found in the record: ${JSON.stringify(dynamoRecord)}`);
+          }
+        } else {
+          logger.info('Function not triggered, empty notification.');
+          callback(null, 'Function not triggered, empty notification.');
         }
       }
+
       callback(null, 'Data processed successfully.');
     } catch (error) {
       if (error.body) {
