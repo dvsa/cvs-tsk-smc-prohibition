@@ -22,7 +22,6 @@ const handler = async (
       logger.debug(`Function triggered with '${JSON.stringify(event)}'.`);
 
       for (const record of event.Records) {
-        logger.debug(record)
         const snsRecord: SNSMessage = JSON.parse(record.body) as SNSMessage;
         const dynamoDBEventStr = snsRecord.Message;
         if (dynamoDBEventStr){
