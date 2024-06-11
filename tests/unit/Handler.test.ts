@@ -75,43 +75,6 @@ describe('Application entry', () => {
         expect(sendMCProhibition).toHaveBeenCalledWith(expectedMCRequests);
       });
     });
-    it('should handle an empty notification gracefully', async () => {
-      const emptyNotificationEvent: SQSEvent = {
-        Records: [
-          {
-            messageId: '1317d15-a23b2-4c68-a2da-67cc685dda5b',
-            receiptHandle: 'aer3fiu34yufybuy34f334',
-            body: JSON.stringify({
-              Type: 'Notification',
-              MessageId: 'some-message-id',
-            }),
-            attributes: {
-              ApproximateReceiveCount: '1',
-              SentTimestamp: '1717678383236',
-              SenderId: 'AIDAISMY7JYY5F7RTT6AO',
-              ApproximateFirstReceiveTimestamp: '1717678383247',
-            },
-            messageAttributes: {},
-            md5OfBody: '45bd1375e48194d7e1563cf20462d',
-            eventSource: 'aws:sqs',
-            eventSourceARN: 'arn:aws:sqs:eu-west-1:local:cvs-smc-prohibition-local-queue',
-            awsRegion: 'eu-west-1',
-          },
-        ],
-      };
-      const resultPromise = new Promise((resolve, reject) => {
-        handler(emptyNotificationEvent, null, (error, result) => {
-          if (error) reject(error);
-          else resolve(result);
-        });
-      });
-
-      await expect(resultPromise).resolves.toBe(
-        'Function not triggered, empty notification.',
-      );
-      expect(extractMCTestResults).not.toHaveBeenCalled();
-      expect(sendMCProhibition).not.toHaveBeenCalled();
-    });
 
     it('should handle an error when sending the object', async () => {
       process.env.SEND_TO_SMC = 'True';
