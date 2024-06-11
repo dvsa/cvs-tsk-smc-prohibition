@@ -16,17 +16,13 @@ describe('Application entry', () => {
         messageId: '1317d15-a23b2-4c68-a2da-67cc685dda5b',
         receiptHandle: 'aer3fiu34yufybuy34f334',
         body: JSON.stringify({
-          Type: 'Notification',
-          MessageId: 'some-message-id',
-          TopicArn: 'arn:aws:sns:us-east-1:123456789012:my-topic',
-          Subject: 'Test Subject',
-          Message: JSON.stringify({
+          Message: {
             eventID: '...',
             eventName: 'INSERT',
             dynamodb: {
               NewImage: dynamoRecordFiltered.dynamodb.NewImage,
             },
-          }),
+          },
         }),
         attributes: {
           ApproximateReceiveCount: '1',
