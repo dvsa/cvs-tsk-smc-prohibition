@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import { Context, Callback, SQSEvent, DynamoDBRecord, SNSMessage } from 'aws-lambda';
+import { Context, Callback, SQSEvent, DynamoDBRecord } from 'aws-lambda';
 import { extractMCTestResults } from './utils/ExtractTestResults';
 import { sendMCProhibition } from './eventbridge/Send';
 import logger from './observability/Logger';
@@ -22,17 +22,14 @@ const handler = async (
       logger.debug(`Function triggered with '${JSON.stringify(event)}'.`);
 
       for (const record of event.Records) {
-        const snsRecord: SNSMessage = JSON.parse(record.body) as SNSMessage;
-        const dynamoDBEventStr = snsRecord.Message;
-        if (dynamoDBEventStr){
-          const dynamoDBEvent = JSON.parse(dynamoDBEventStr);
-          const dynamoRecord: DynamoDBRecord = dynamoDBEvent as DynamoDBRecord;
-          const mcRequests: MCRequest[] = extractMCTestResults(dynamoRecord);
+        const dynamoDBEvent: DynamoDBRecord = JSON.parse(record.body) as DynamoDBRecord;
+        if (dynamoDBEvent){
+          const mcRequests: MCRequest[] = extractMCTestResults(dynamoDBEvent);
 
           if (mcRequests != null && mcRequests.length > 0) {
             await sendMCProhibition(mcRequests);
           } else {
-            logger.info(`No relevant MC test results found in the record: ${JSON.stringify(dynamoRecord)}`);
+            logger.info(`No relevant MC test results found in the record: ${JSON.stringify(dynamoDBEvent)}`);
           }
         } else {
           logger.info('Function not triggered, empty notification.');
