@@ -8,6 +8,7 @@
 
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { DateTime } from 'luxon';
+import { DynamoDBRecord } from 'aws-lambda';
 import { PROHIB_CLEARANCE_TEST_TYPE_IDS } from '../assets/Enums';
 import logger from '../observability/Logger';
 import { HTTPError } from './HTTPError';
@@ -20,8 +21,8 @@ import { ValidationUtil } from './ValidationUtil';
  * required to be sent to MC in order to  clear prohibitions
  * @param record
  */
-export const extractMCTestResults = (record: any): MCRequest[] => {
-  const testResultUnmarshall = unmarshall(record.dynamodb.NewImage as { any });
+export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
+  const testResultUnmarshall = unmarshall(record.dynamodb.NewImage as any);
   logger.info(
     `Processing testResultId: ${JSON.stringify(
       testResultUnmarshall.testResultId,
