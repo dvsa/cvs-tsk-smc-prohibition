@@ -9,11 +9,14 @@
 import { unmarshall } from '@aws-sdk/util-dynamodb';
 import { DateTime } from 'luxon';
 import { DynamoDBRecord } from 'aws-lambda';
+import { TestResultSchema } from '@dvsa/cvs-type-definitions/types/v1/test-result';
+import { TestResults } from '@dvsa/cvs-type-definitions/types/v1/enums/testResult.enum'
+import { TestStatus } from '@dvsa/cvs-type-definitions/types/v1/enums/testStatus.enum'
+import { TestTypeSchema } from '@dvsa/cvs-type-definitions/types/v1/test-type';
 import { PROHIB_CLEARANCE_TEST_TYPE_IDS } from '../assets/Enums';
 import logger from '../observability/Logger';
 import { HTTPError } from './HTTPError';
 import { MCRequest } from './MCRequest';
-import { TestResult } from './TestResult';
 import { ValidationUtil } from './ValidationUtil';
 
 /**
@@ -22,7 +25,8 @@ import { ValidationUtil } from './ValidationUtil';
  * @param record
  */
 export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
-  const testResultUnmarshall = unmarshall(record.dynamodb.NewImage as any);
+  // @ts-ignore
+  const testResultUnmarshall = unmarshall(record.dynamodb.NewImage) as TestResultSchema;
   logger.info(
     `Processing testResultId: ${JSON.stringify(
       testResultUnmarshall.testResultId,
@@ -34,7 +38,8 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
     )
     .filter(
       (testType) =>
-        testType.testResult === 'pass' || testType.testResult === 'prs',
+        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+        testType.testResult === TestResults.PASS || testType.testResult === TestResults.PRS,
     )
     .filter(
       () =>
@@ -42,15 +47,16 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
         testResultUnmarshall.vehicleType === 'psv' ||
         testResultUnmarshall.vehicleType === 'trl',
     )
-    .filter(() => testResultUnmarshall.testStatus === 'submitted')
-    .map((testResult: TestResult) => ({
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
+    .filter(() => testResultUnmarshall.testStatus === TestStatus.SUBMITTED)
+    .map((testType : TestTypeSchema ) : MCRequest => ({
       vehicleIdentifier:
         testResultUnmarshall.vehicleType === 'trl'
           ? testResultUnmarshall.trailerId
           : testResultUnmarshall.vrm,
-      testDate: isoDateFormatter(testResult.testTypeEndTimestamp),
+      testDate: isoDateFormatter(testType.testTypeEndTimestamp),
       vin: testResultUnmarshall.vin,
-      testResult: calculateTestResult(testResult),
+      testResult: calculateTestResult(testType.testResult as TestResults),
       hgvPsvTrailFlag: testResultUnmarshall.vehicleType.charAt(0).toUpperCase(),
       testResultId: testResultUnmarshall.testResultId,
     }));
@@ -69,8 +75,8 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
  * This method is used to change the test result to be a single, uppercase character
  * @param testResult
  */
-export const calculateTestResult = (testResult: TestResult): string =>
-  testResult.testResult.toLowerCase() === 'pass' ? 'S' : 'R';
+export const calculateTestResult = (testResult: TestResults): string =>
+  testResult === TestResults.PASS ? 'S' : 'R';
 
 /**
  * This method is used to change the format of an iso string to be formatted as yyyy/MM/dd
