@@ -22,10 +22,10 @@ import { ValidationUtil } from './ValidationUtil';
 /**
  * This is used to extract the relevant fields from the test record that is
  * required to be sent to MC in order to  clear prohibitions
- * @param record
+ * @param record : DynamoDBRecord
  */
 export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
-  const testResultUnmarshall : TestResultSchema = unmarshall(record.dynamodb.NewImage as any) as TestResultSchema;
+  const testResultUnmarshall: TestResultSchema = unmarshall(record.dynamodb.NewImage as any) as TestResultSchema;
   logger.info(
     `Processing testResultId: ${JSON.stringify(
       testResultUnmarshall.testResultId,
@@ -46,9 +46,8 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
         testResultUnmarshall.vehicleType === 'trl',
     )
     .filter(() => testResultUnmarshall.testStatus === TestStatus.SUBMITTED)
-    .map((testType : TestTypeSchema ) : MCRequest => ({
-      vehicleIdentifier:
-        testResultUnmarshall.vehicleType === 'trl'
+    .map((testType: TestTypeSchema) : MCRequest => ({
+      vehicleIdentifier: testResultUnmarshall.vehicleType === 'trl'
           ? testResultUnmarshall.trailerId
           : testResultUnmarshall.vrm,
       testDate: isoDateFormatter(testType.testTypeEndTimestamp),
@@ -70,14 +69,14 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
 
 /**
  * This method is used to change the test result to be a single, uppercase character
- * @param testResult
+ * @param testResult : TestResults
  */
 export const calculateTestResult = (testResult: TestResults): string =>
   testResult === TestResults.PASS ? 'S' : 'R';
 
 /**
  * This method is used to change the format of an iso string to be formatted as yyyy/MM/dd
- * @param date
+ * @param date : string
  */
 export const isoDateFormatter = (date: string): string =>
   DateTime.fromISO(date).toFormat('dd/MM/yyyy');
