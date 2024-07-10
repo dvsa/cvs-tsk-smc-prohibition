@@ -25,8 +25,7 @@ import { ValidationUtil } from './ValidationUtil';
  * @param record
  */
 export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
-  // @ts-ignore
-  const testResultUnmarshall = unmarshall(record.dynamodb.NewImage) as TestResultSchema;
+  const testResultUnmarshall : TestResultSchema = unmarshall(record.dynamodb.NewImage as any) as TestResultSchema;
   logger.info(
     `Processing testResultId: ${JSON.stringify(
       testResultUnmarshall.testResultId,
@@ -38,8 +37,7 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
     )
     .filter(
       (testType) =>
-        // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-        testType.testResult === TestResults.PASS || testType.testResult === TestResults.PRS,
+        (testType.testResult as TestResults) === TestResults.PASS || (testType.testResult as TestResults) === TestResults.PRS,
     )
     .filter(
       () =>
@@ -47,8 +45,7 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
         testResultUnmarshall.vehicleType === 'psv' ||
         testResultUnmarshall.vehicleType === 'trl',
     )
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-enum-comparison
-    .filter(() => testResultUnmarshall.testStatus === TestStatus.SUBMITTED)
+    .filter(() => (testResultUnmarshall.testStatus as TestStatus) === TestStatus.SUBMITTED)
     .map((testType : TestTypeSchema ) : MCRequest => ({
       vehicleIdentifier:
         testResultUnmarshall.vehicleType === 'trl'
