@@ -37,7 +37,7 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
     )
     .filter(
       (testType) =>
-        (testType.testResult as TestResults) === TestResults.PASS || (testType.testResult as TestResults) === TestResults.PRS,
+        testType.testResult === TestResults.PASS || testType.testResult === TestResults.PRS,
     )
     .filter(
       () =>
@@ -45,7 +45,7 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
         testResultUnmarshall.vehicleType === 'psv' ||
         testResultUnmarshall.vehicleType === 'trl',
     )
-    .filter(() => (testResultUnmarshall.testStatus as TestStatus) === TestStatus.SUBMITTED)
+    .filter(() => testResultUnmarshall.testStatus === TestStatus.SUBMITTED)
     .map((testType : TestTypeSchema ) : MCRequest => ({
       vehicleIdentifier:
         testResultUnmarshall.vehicleType === 'trl'
