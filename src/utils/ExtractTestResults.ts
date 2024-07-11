@@ -13,7 +13,7 @@ import { TestResultSchema } from '@dvsa/cvs-type-definitions/types/v1/test-resul
 import { TestResults } from '@dvsa/cvs-type-definitions/types/v1/enums/testResult.enum'
 import { TestStatus } from '@dvsa/cvs-type-definitions/types/v1/enums/testStatus.enum'
 import { TestTypeSchema } from '@dvsa/cvs-type-definitions/types/v1/test-type';
-import { PROHIB_CLEARANCE_TEST_TYPE_IDS } from '../assets/Enums';
+import { PROHIBITION_CLEARANCE_TEST } from '@dvsa/cvs-microservice-common/classes/testTypes/Constants';
 import logger from '../observability/Logger';
 import { HTTPError } from './HTTPError';
 import { MCRequest } from './MCRequest';
@@ -33,7 +33,7 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
   );
   const mcRequest: MCRequest[] = testResultUnmarshall.testTypes
     .filter((testType) =>
-      PROHIB_CLEARANCE_TEST_TYPE_IDS.IDS.includes(testType.testTypeId),
+      PROHIBITION_CLEARANCE_TEST.IDS.includes(testType.testTypeId),
     )
     .filter(
       (testType) =>
@@ -46,7 +46,7 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
         testResultUnmarshall.vehicleType === 'trl',
     )
     .filter(() => testResultUnmarshall.testStatus === TestStatus.SUBMITTED)
-    .map((testType: TestTypeSchema) : MCRequest => ({
+    .map((testType: TestTypeSchema): MCRequest => ({
       vehicleIdentifier: testResultUnmarshall.vehicleType === 'trl'
           ? testResultUnmarshall.trailerId
           : testResultUnmarshall.vrm,
