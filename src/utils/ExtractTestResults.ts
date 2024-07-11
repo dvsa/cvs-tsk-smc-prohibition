@@ -23,7 +23,8 @@ import { ValidationUtil } from './ValidationUtil';
 /**
  * This is used to extract the relevant fields from the test record that is
  * required to be sent to MC in order to  clear prohibitions
- * @param {DynamoDBRecord} record
+ * @param record - a dynamoDB record
+ * @returns MCRequest[] - an array of MCRequest interface, contains formatted test data
  */
 export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
   const testResultUnmarshall: TestResultSchema = unmarshall(record.dynamodb.NewImage as any) as TestResultSchema;
@@ -69,15 +70,17 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
 };
 
 /**
- * This method is used to change the test result to be a single, uppercase character
- * @param {TestResults} testResult
+ * This method is used to change the test result to be a single, uppercase character.
+ * @param testResult - enum of string test results PASS/PRS (smc-prohibition doesn't interact with fail).
+ * @returns string - changes testResult to string of S or R
  */
 export const calculateTestResult = (testResult: TestResults): string =>
   testResult === TestResults.PASS ? 'S' : 'R';
 
 /**
  * This method is used to change the format of an iso string to be formatted as yyyy/MM/dd
- * @param {string} date
+ * @param date - string of the test date
+ * @returns string - date in dd/MM/yyyy format
  */
 export const isoDateFormatter = (date: string): string =>
   DateTime.fromISO(date).toFormat('dd/MM/yyyy');
