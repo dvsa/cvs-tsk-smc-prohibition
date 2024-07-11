@@ -14,6 +14,7 @@ import { TestResults } from '@dvsa/cvs-type-definitions/types/v1/enums/testResul
 import { TestStatus } from '@dvsa/cvs-type-definitions/types/v1/enums/testStatus.enum'
 import { TestTypeSchema } from '@dvsa/cvs-type-definitions/types/v1/test-type';
 import { PROHIBITION_CLEARANCE_TEST } from '@dvsa/cvs-microservice-common/classes/testTypes/Constants';
+import { TestTypeHelper } from '@dvsa/cvs-microservice-common/classes/testTypes/testTypeHelper';
 import logger from '../observability/Logger';
 import { HTTPError } from './HTTPError';
 import { MCRequest } from './MCRequest';
@@ -33,7 +34,7 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
   );
   const mcRequest: MCRequest[] = testResultUnmarshall.testTypes
     .filter((testType) =>
-      PROHIBITION_CLEARANCE_TEST.IDS.includes(testType.testTypeId),
+      TestTypeHelper.validateTestTypeIdInList(PROHIBITION_CLEARANCE_TEST, testType.testTypeId),
     )
     .filter(
       (testType) =>
