@@ -39,6 +39,9 @@ const handler = async (
 
       callback(null, 'Data processed successfully.');
     } catch (error) {
+      if (error instanceof Error){
+        logger.error(error);
+      }
       if (error.body) {
         logger.error(JSON.stringify(error.body));
         callback(
