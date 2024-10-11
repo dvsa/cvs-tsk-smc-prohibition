@@ -124,8 +124,20 @@ describe('Application entry', () => {
       });
     });
 
-    it('should handle an invalid environment variable', async () => {
+    it('should handle a false environment variable', async () => {
       process.env.SEND_TO_SMC = 'false';
+
+      await handler(event, null, (error, result) => {
+        expect(error).toBeNull();
+        expect(infoLogSpy).toHaveBeenCalledWith('Function not triggered, Missing or not true environment variable present');
+        expect(result).toEqual({"batchItemFailures": []});
+        expect(extractMCTestResults).not.toHaveBeenCalled();
+        expect(sendMCProhibition).not.toHaveBeenCalled();
+      });
+    });
+
+    it('should handle a missing environment variable', async () => {
+      delete process.env.SEND_TO_SMC;
 
       await handler(event, null, (error, result) => {
         expect(error).toBeNull();
