@@ -147,6 +147,40 @@ describe('Application entry', () => {
         expect(sendMCProhibition).not.toHaveBeenCalled();
       });
     });
+
+    it('should add only 1 record to batchItemFailures if one of two records fails', async () => {
+      process.env.SEND_TO_SMC = 'TRUE';
+
+      const eventWithTwoRecords:SQSEvent = { ...event};
+      eventWithTwoRecords.Records.push(event.Records[0]);
+      eventWithTwoRecords.Records[1].messageId = '1317d15-a23b2-4c68-a2da-67c999999999';
+
+      const expectedMCRequests: MCRequest[] = [
+        {
+          vehicleIdentifier: 'ABC1234',
+          testDate: '14/01/2019',
+          vin: 'XMGDE02FS0H012303',
+          testResult: 'P',
+          hgvPsvTrailFlag: 'T',
+          testResultId: 'some-test-result-id' },
+      ];
+
+      jest.mocked(extractMCTestResults).mockReturnValueOnce(expectedMCRequests).mockReturnValueOnce(expectedMCRequests);
+      jest.mocked(sendMCProhibition).mockResolvedValueOnce({ SuccessCount: 1, FailCount: 0 }).mockRejectedValueOnce(new Error('Oh no!'));
+
+      const expectedResponse = {
+        batchItemFailures: [
+          { itemIdentifier: '1317d15-a23b2-4c68-a2da-67c999999999' },
+        ],
+      };
+
+      await handler(event, null, (error, result) => {
+        expect(error).toBeNull();
+        expect(result).toEqual(expectedResponse);
+        expect(sendMCProhibition).toHaveBeenCalledTimes(2);
+        expect(sendMCProhibition).toHaveBeenCalledWith(expectedMCRequests);
+      });
+    });
   });
 });
 
