@@ -39,11 +39,11 @@ const handler = async (
 
       callback(null, 'Data processed successfully.');
     } catch (error) {
-      if (error.body) {
-        logger.error(JSON.stringify(error.body));
+      if (error.message) {
+        logger.error(JSON.stringify(error.message));
         callback(
           null,
-          `Data processed unsuccessfully: ${JSON.stringify(error.body)}`,
+          `Data processed unsuccessfully: ${JSON.stringify(error.message)}`,
         );
       } else {
         logger.error(error);
