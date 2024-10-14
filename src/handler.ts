@@ -39,7 +39,7 @@ const handler = async (
 
       callback(null, 'Data processed successfully.');
     } catch (error) {
-      if (error.body) {
+      if (error.message) {
         logger.error(JSON.stringify(error.message));
         callback(
           null,

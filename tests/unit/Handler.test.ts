@@ -74,7 +74,7 @@ describe('Application entry', () => {
 
     it('should handle an error when sending the object', async () => {
       process.env.SEND_TO_SMC = 'True';
-      const expectedErrorMessage = 'Data processed unsuccessfully: Error: Oh no!';
+      const expectedErrorMessage = `Data processed unsuccessfully: ${JSON.stringify('Oh no!')}`;
       jest.mocked(sendMCProhibition).mockRejectedValue(new Error('Oh no!'));
 
       await handler(event, null, (error, result) => {
