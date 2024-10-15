@@ -42,7 +42,7 @@ const handler = async (
     logger.info('Function not triggered, Missing or not true environment variable present');
   }
 
-  return batchItemFailures;
+  return { batchItemFailures };
 };
 
 export { handler };
