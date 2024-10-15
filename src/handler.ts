@@ -9,7 +9,7 @@ import { MCRequest } from './utils/MCRequest';
 const handler = async (
   event: SQSEvent,
   _context: Context,
-  callback: Callback,
+  _callback: Callback,
 ) => {
   let { NODE_ENV, SERVICE, AWS_REGION, AWS_STAGE, SEND_TO_SMC } = process.env;
 
@@ -42,7 +42,7 @@ const handler = async (
     logger.info('Function not triggered, Missing or not true environment variable present');
   }
 
-  callback(null, { batchItemFailures });
+  return batchItemFailures;
 };
 
 export { handler };
