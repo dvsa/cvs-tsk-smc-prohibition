@@ -174,7 +174,7 @@ describe('Application entry', () => {
         ],
       };
 
-      await handler(event, null, (error, result) => {
+      await handler(eventWithTwoRecords, null, (error, result) => {
         expect(error).toBeNull();
         expect(result).toEqual(expectedResponse);
         expect(sendMCProhibition).toHaveBeenCalledTimes(2);
