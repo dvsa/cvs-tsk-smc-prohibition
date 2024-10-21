@@ -24,8 +24,15 @@ const handler = async (
     logger.debug(`Function triggered with '${JSON.stringify(event)}'.`);
 
     for (const record of event.Records) {
+
       try {
         const dynamoDBEvent: DynamoDBRecord = JSON.parse(record.body) as DynamoDBRecord;
+
+        if (dynamoDBEvent?.eventName === 'REMOVE') {
+          logger.info(`Record has REMOVE event name, skipping record: ${JSON.stringify(dynamoDBEvent)}`);
+          continue;
+        }
+
         const mcRequests: MCRequest[] = extractMCTestResults(dynamoDBEvent);
 
         if (mcRequests.length > 0) {
