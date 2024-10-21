@@ -27,7 +27,14 @@ import { ValidationUtil } from './ValidationUtil';
  * @returns MCRequest[] - an array of MCRequest interface, contains formatted test data
  */
 export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
-  const testResultUnmarshall: TestResultSchema = unmarshall(record.dynamodb.NewImage as any) as TestResultSchema;
+  let testResultUnmarshall: TestResultSchema;
+
+  try {
+    testResultUnmarshall = unmarshall(record.dynamodb.NewImage as any) as TestResultSchema;
+  } catch (error) {
+    throw new Error(`Error unmarshalling test result: ${error}`);
+  }
+
   logger.info(
     `Processing testResultId: ${JSON.stringify(
       testResultUnmarshall.testResultId,
