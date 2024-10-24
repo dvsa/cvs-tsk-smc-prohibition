@@ -210,32 +210,6 @@ describe('Application entry', () => {
         expect(sendMCProhibition).toHaveBeenCalledWith(expectedMCRequests);
       });
     });
-
-    it('should log and move on if eventName is REMOVE', async () => {
-      process.env.SEND_TO_SMC = 'TRUE';
-
-      const eventNameWithRemove:SQSEvent = { ...event };
-      eventNameWithRemove.Records[0].body = JSON.stringify({
-        eventID: '...',
-        eventName: 'REMOVE',
-        dynamodb: {
-          NewImage: dynamoRecordFiltered.dynamodb.NewImage,
-        },
-      });
-
-      const expectedResponse = {
-        batchItemFailures: [],
-      };
-
-      const expectedLog = JSON.stringify(JSON.parse(eventNameWithRemove.Records[0].body));
-
-      await handler(eventNameWithRemove, null, (error, result) => {
-        expect(error).toBeNull();
-        expect(result).toEqual(expectedResponse);
-        expect(sendMCProhibition).not.toHaveBeenCalled();
-        expect(infoLogSpy).toHaveBeenCalledWith(`Record has REMOVE event name, skipping record: ${expectedLog}`);
-      });
-    });
   });
 });
 

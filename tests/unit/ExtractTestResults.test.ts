@@ -46,4 +46,16 @@ describe('extractTestResults', () => {
       expect(e.body.errors[0]).toEqual('"vin" is required');
     }
   });
+
+  it('should throw an error if there is an issue unmarshalling the DynamoDB record', () => {
+    const invalidDynamoDBRecord = {
+      dynamodb: {
+        NewImage: 'invalid data',
+      },
+    } as unknown as DynamoDBRecord;
+
+    expect(() => extractMCTestResults(invalidDynamoDBRecord)).toThrow(
+      'Error unmarshalling test result:'
+    );
+  });
 });
