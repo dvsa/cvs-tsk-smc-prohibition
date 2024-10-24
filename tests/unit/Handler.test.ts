@@ -148,6 +148,35 @@ describe('Application entry', () => {
       });
     });
 
+    it('should handle an error that does not have message', async () => {
+      process.env.SEND_TO_SMC = 'TRUE';
+
+      const eventWithError: SQSEvent = { ...event };
+      eventWithError.Records[0].body = 'invalid JSON to cause error';
+
+      jest.spyOn(JSON, 'parse').mockImplementationOnce(() => {
+        const error = new Error('CustomError with no message');
+        delete error.message;
+        throw error;
+      });
+
+      const expectedResponse = {
+        batchItemFailures: [
+          { itemIdentifier: eventWithError.Records[0].messageId },
+        ],
+      };
+
+      const expectedLog = JSON.stringify(eventWithError.Records[0]);
+
+      await handler(eventWithError, null, (error, result) => {
+        expect(error).toBeNull();
+        expect(result).toEqual(expectedResponse);
+        expect(infoLogSpy).not.toHaveBeenCalled();
+        expect(logger.error).toHaveBeenCalledWith(`Error processing record: ${expectedLog}`);
+        expect(logger.error).toHaveBeenCalledWith(expect.any(SyntaxError));
+      });
+    });
+
     it('should add only 1 record to batchItemFailures if one of two records fails', async () => {
       process.env.SEND_TO_SMC = 'TRUE';
 
