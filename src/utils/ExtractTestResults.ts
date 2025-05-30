@@ -12,7 +12,7 @@ import { DynamoDBRecord } from 'aws-lambda';
 import { TestResultSchema } from '@dvsa/cvs-type-definitions/types/v1/test-result';
 import { TestResults } from '@dvsa/cvs-type-definitions/types/v1/enums/testResult.enum'
 import { TestStatus } from '@dvsa/cvs-type-definitions/types/v1/enums/testStatus.enum'
-import { TestTypeSchema } from '@dvsa/cvs-type-definitions/types/v1/test-type';
+import { TestResultTestTypeSchema } from '@dvsa/cvs-type-definitions/types/v1/test-result-test-type';
 import { PROHIBITION_CLEARANCE_TEST } from '@dvsa/cvs-microservice-common/classes/testTypes/Constants';
 import { TestTypeHelper } from '@dvsa/cvs-microservice-common/classes/testTypes/testTypeHelper';
 import logger from '../observability/Logger';
@@ -55,7 +55,7 @@ export const extractMCTestResults = (record: DynamoDBRecord): MCRequest[] => {
         testResultUnmarshall.vehicleType === 'trl',
     )
     .filter(() => testResultUnmarshall.testStatus === TestStatus.SUBMITTED)
-    .map((testType: TestTypeSchema): MCRequest => ({
+    .map((testType: TestResultTestTypeSchema): MCRequest => ({
       vehicleIdentifier: testResultUnmarshall.vehicleType === 'trl'
           ? testResultUnmarshall.trailerId
           : testResultUnmarshall.vrm,
