@@ -5,6 +5,7 @@ import { extractMCTestResults } from './utils/ExtractTestResults';
 import { sendMCProhibition } from './eventbridge/Send';
 import logger from './observability/Logger';
 import { MCRequest } from './utils/MCRequest';
+import { EventLogging } from "./utils/EventLogging";
 
 const handler = async (
   event: SQSEvent,
@@ -22,14 +23,17 @@ const handler = async (
 
   if (SEND_TO_SMC?.toUpperCase() === 'TRUE') {
     logger.debug(`Function triggered with '${JSON.stringify(event)}'.`);
+    logger.info(`${EventLogging.SMC_PROHIBITION_FEED_INIT}`); // TODO awaiting feedback from TSS if required - log event or part of event?
 
     for (const record of event.Records) {
       try {
+          logger.info(`Processing record with messageId: ${record.messageId}`);
         const dynamoDBEvent: DynamoDBRecord = JSON.parse(record.body) as DynamoDBRecord;
         const mcRequests: MCRequest[] = extractMCTestResults(dynamoDBEvent);
 
         if (mcRequests.length > 0) {
           await sendMCProhibition(mcRequests);
+          logger.info(`${EventLogging.SMC_PROHIBITION_FEED_SUCCESS}: itemIdentifier: ${record.messageId}`); // TODO awaiting feedback from TSS if required
         } else {
           logger.info(`No relevant MC test results found in the record: ${JSON.stringify(dynamoDBEvent)}`);
         }
@@ -40,6 +44,7 @@ const handler = async (
         } else {
           logger.error(error);
         }
+        logger.info(`${EventLogging.SMC_PROHIBITION_FEED_FAILURE}: itemIdentifier: ${record.messageId}`);
         batchItemFailures.push({ itemIdentifier: record.messageId });
       }
     }

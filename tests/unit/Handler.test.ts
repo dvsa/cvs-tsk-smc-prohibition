@@ -1,4 +1,5 @@
-import { SQSEvent } from 'aws-lambda';
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+import { SQSEvent, SQSRecord } from 'aws-lambda';
 import { sendMCProhibition } from '../../src/eventbridge/Send';
 import { SendResponse } from '../../src/eventbridge/SendResponse';
 import { extractMCTestResults } from '../../src/utils/ExtractTestResults';
@@ -6,6 +7,7 @@ import dynamoRecordFiltered from './data/dynamoEventWithCert.json';
 import { MCRequest } from '../../src/utils/MCRequest';
 import { handler } from '../../src/handler';
 import logger from '../../src/observability/Logger';
+import { EventLogging } from '../../src/utils/EventLogging';
 
 jest.mock('../../src/eventbridge/Send');
 jest.mock('../../src/utils/ExtractTestResults');
@@ -70,12 +72,10 @@ describe('Application entry', () => {
       jest.mocked(extractMCTestResults).mockReturnValue(expectedMCRequests);
       jest.mocked(sendMCProhibition).mockResolvedValue(sendResponse);
 
-      await handler(event, null, (error, result) => {
-        expect(error).toBeNull();
-        // add check to see if logs spits out what was there before
-        expect(result).toEqual({"batchItemFailures": []});
-        expect(sendMCProhibition).toHaveBeenCalledWith(expectedMCRequests);
-      });
+      const result = await handler(event, null, null);
+      expect(result).toEqual({"batchItemFailures": []});
+      expect(sendMCProhibition).toHaveBeenCalledTimes(1);
+      expect(sendMCProhibition).toHaveBeenCalledWith(expectedMCRequests);
     });
 
     it('should handle an error when sending the object', async () => {
@@ -101,12 +101,16 @@ describe('Application entry', () => {
       jest.mocked(extractMCTestResults).mockReturnValue(expectedMCRequests);
       jest.mocked(sendMCProhibition).mockRejectedValue(new Error('Oh no!'));
 
-      await handler(event, null, (error, result) => {
-        expect(error).toBeNull();
-        expect(errorLogSpy).toHaveBeenCalledWith(`Error processing record: ${JSON.stringify(event.Records[0])}`);
-        expect(result).toEqual(expectedResponse);
-        expect(sendMCProhibition).toHaveBeenCalledTimes(1);
-      });
+      const result = await handler(event, null, null);
+      expect(result).toEqual(expectedResponse);
+      expect(sendMCProhibition).toHaveBeenCalledTimes(1);
+      expect(sendMCProhibition).toHaveBeenCalledWith(expectedMCRequests);
+      expect(infoLogSpy.mock.calls[0][0]).toBe(EventLogging.SMC_PROHIBITION_FEED_INIT);
+      expect(infoLogSpy.mock.calls[1][0]).toBe(`Processing record with messageId: ${event.Records[0].messageId}`);
+      expect(errorLogSpy.mock.calls[0][0]).toBe(`Error processing record: ${JSON.stringify(event.Records[0])}`);
+      expect(errorLogSpy.mock.calls[1][0]).toBe("\"Oh no!\"");
+      expect(infoLogSpy.mock.calls[2][0])
+        .toBe(`${EventLogging.SMC_PROHIBITION_FEED_FAILURE}: itemIdentifier: ${event.Records[0].messageId}`);
     });
 
     it('should log and not call sendMCProhibition if mcRequests is empty after extracting test results', async () => {
@@ -116,49 +120,46 @@ describe('Application entry', () => {
 
       jest.mocked(extractMCTestResults).mockReturnValue(expectedMCRequests);
 
-      await handler(event, null, (error, result) => {
-        expect(error).toBeNull();
-        expect(infoLogSpy).toHaveBeenCalledWith(`No relevant MC test results found in the record: ${event.Records[0].body}`);
-        expect(result).toEqual(expectedResponse);
-        expect(sendMCProhibition).toHaveBeenCalledTimes(0);
-      });
+      const result = await handler(event, null, null);
+      expect(result).toEqual(expectedResponse);
+      expect(sendMCProhibition).toHaveBeenCalledTimes(0);
+      expect(infoLogSpy.mock.calls[0][0]).toBe(EventLogging.SMC_PROHIBITION_FEED_INIT);
+      expect(infoLogSpy.mock.calls[1][0]).toBe(`Processing record with messageId: ${event.Records[0].messageId}`);
+      expect(infoLogSpy.mock.calls[2][0])
+        .toBe(`No relevant MC test results found in the record: ${event.Records[0].body}`);
     });
 
     it('should handle a false environment variable', async () => {
       process.env.SEND_TO_SMC = 'false';
 
-      await handler(event, null, (error, result) => {
-        expect(error).toBeNull();
-        expect(infoLogSpy).toHaveBeenCalledWith('Function not triggered, Missing or not true environment variable present');
-        expect(result).toEqual({"batchItemFailures": []});
-        expect(extractMCTestResults).not.toHaveBeenCalled();
-        expect(sendMCProhibition).not.toHaveBeenCalled();
-      });
+      const result = await handler(event, null, null);
+
+      expect(result).toEqual({"batchItemFailures": []});
+      expect(sendMCProhibition).not.toHaveBeenCalled();
+      expect(extractMCTestResults).not.toHaveBeenCalled();
+      expect(infoLogSpy).toHaveBeenCalledWith('Function not triggered, Missing or not true environment variable present');
     });
 
     it('should handle a missing environment variable', async () => {
       delete process.env.SEND_TO_SMC;
 
-      await handler(event, null, (error, result) => {
-        expect(error).toBeNull();
-        expect(infoLogSpy).toHaveBeenCalledWith('Function not triggered, Missing or not true environment variable present');
-        expect(result).toEqual({"batchItemFailures": []});
-        expect(extractMCTestResults).not.toHaveBeenCalled();
-        expect(sendMCProhibition).not.toHaveBeenCalled();
-      });
+      const result = await handler(event, null, null);
+
+      expect(result).toEqual({"batchItemFailures": []});
+      expect(extractMCTestResults).not.toHaveBeenCalled();
+      expect(sendMCProhibition).not.toHaveBeenCalled();
+      expect(infoLogSpy).toHaveBeenCalledWith('Function not triggered, Missing or not true environment variable present');
     });
 
-    it('should handle an error that does not have message', async () => {
+    it('should handle an error that does not have a valid body', async () => {
       process.env.SEND_TO_SMC = 'TRUE';
 
-      const eventWithError: SQSEvent = { ...event };
-      eventWithError.Records[0].body = 'invalid JSON to cause error';
+      const invalidBody: SQSRecord = JSON.parse(JSON.stringify(event.Records[0]));
+      invalidBody.body = 'invalid JSON to cause error';
 
-      jest.spyOn(JSON, 'parse').mockImplementationOnce(() => {
-        const error = new Error('CustomError with no message');
-        delete error.message;
-        throw error;
-      });
+      const eventWithError: SQSEvent = {
+        Records: [invalidBody],
+      };
 
       const expectedResponse = {
         batchItemFailures: [
@@ -166,23 +167,29 @@ describe('Application entry', () => {
         ],
       };
 
-      const expectedLog = JSON.stringify(eventWithError.Records[0]);
+      const result = await handler(eventWithError, null, null);
 
-      await handler(eventWithError, null, (error, result) => {
-        expect(error).toBeNull();
-        expect(result).toEqual(expectedResponse);
-        expect(infoLogSpy).not.toHaveBeenCalled();
-        expect(logger.error).toHaveBeenCalledWith(`Error processing record: ${expectedLog}`);
-        expect(logger.error).toHaveBeenCalledWith(expect.any(SyntaxError));
-      });
+      expect(result).toEqual(expectedResponse);
+      expect(extractMCTestResults).not.toHaveBeenCalled();
+      expect(sendMCProhibition).not.toHaveBeenCalled();
+      expect(infoLogSpy.mock.calls[0][0]).toBe(EventLogging.SMC_PROHIBITION_FEED_INIT);
+      expect(infoLogSpy.mock.calls[1][0]).toBe(`Processing record with messageId: ${event.Records[0].messageId}`);
+      expect(errorLogSpy.mock.calls[0][0]).toBe(`Error processing record: ${JSON.stringify(eventWithError.Records[0])}`);
+      expect(errorLogSpy.mock.calls[1][0]).toBe("\"Unexpected token i in JSON at position 0\"");
+      expect(infoLogSpy.mock.calls[2][0])
+        .toBe(`${EventLogging.SMC_PROHIBITION_FEED_FAILURE}: itemIdentifier: ${event.Records[0].messageId}`);
     });
 
     it('should add only 1 record to batchItemFailures if one of two records fails', async () => {
       process.env.SEND_TO_SMC = 'TRUE';
 
-      const eventWithTwoRecords:SQSEvent = { ...event};
-      eventWithTwoRecords.Records.push(event.Records[0]);
-      eventWithTwoRecords.Records[1].messageId = '1317d15-a23b2-4c68-a2da-67c999999999';
+      const passingRecord: SQSRecord = JSON.parse(JSON.stringify(event.Records[0]));
+      const failingRecord: SQSRecord = JSON.parse(JSON.stringify(event.Records[0]));
+      failingRecord.messageId = '1317d15-a23b2-4c68-a2da-67c999999999';
+
+      const eventWithTwoRecords: SQSEvent = {
+        Records: [passingRecord, failingRecord],
+      };
 
       const expectedMCRequests: MCRequest[] = [
         {
@@ -203,12 +210,51 @@ describe('Application entry', () => {
         ],
       };
 
-      await handler(eventWithTwoRecords, null, (error, result) => {
-        expect(error).toBeNull();
-        expect(result).toEqual(expectedResponse);
-        expect(sendMCProhibition).toHaveBeenCalledTimes(2);
-        expect(sendMCProhibition).toHaveBeenCalledWith(expectedMCRequests);
-      });
+      const result = await handler(eventWithTwoRecords, null, null);
+
+      console.log(result.batchItemFailures.length);
+
+      expect(result).toEqual(expectedResponse);
+      expect(sendMCProhibition).toHaveBeenCalledTimes(2);
+      expect(sendMCProhibition).toHaveBeenCalledWith(expectedMCRequests);
+      expect(infoLogSpy.mock.calls[0][0]).toBe(EventLogging.SMC_PROHIBITION_FEED_INIT);
+      expect(infoLogSpy.mock.calls[1][0]).toBe(`Processing record with messageId: ${eventWithTwoRecords.Records[0].messageId}`);
+      expect(infoLogSpy.mock.calls[2][0])
+        .toBe(`${EventLogging.SMC_PROHIBITION_FEED_SUCCESS}: itemIdentifier: ${eventWithTwoRecords.Records[0].messageId}`);
+      expect(infoLogSpy.mock.calls[3][0]).toBe(`Processing record with messageId: ${eventWithTwoRecords.Records[1].messageId}`);
+      expect(errorLogSpy.mock.calls[0][0]).toBe(`Error processing record: ${JSON.stringify(eventWithTwoRecords.Records[1])}`);
+      expect(errorLogSpy.mock.calls[1][0]).toBe("\"Oh no!\"");
+      expect(infoLogSpy.mock.calls[4][0])
+        .toBe(`${EventLogging.SMC_PROHIBITION_FEED_FAILURE}: itemIdentifier: ${eventWithTwoRecords.Records[1].messageId}`);
+    });
+
+    it('should handle error with no message', async () => {
+      process.env.SEND_TO_SMC = 'True';
+      const expectedMCRequests: MCRequest[] = [
+        {
+          vehicleIdentifier: 'ABC1234',
+          testDate: '14/01/2019',
+          vin: 'XMGDE02FS0H012303',
+          testResult: 'P',
+          hgvPsvTrailFlag: 'T',
+          testResultId: 'some-test-result-id',
+        },
+      ];
+
+      const mockError = new Error();
+
+      jest.mocked(extractMCTestResults).mockReturnValue(expectedMCRequests);
+      jest.mocked(sendMCProhibition).mockRejectedValue(mockError);
+
+      const result = await handler(event, null, null);
+
+      expect(result).not.toBeNull();
+      expect(infoLogSpy.mock.calls[0][0]).toBe(EventLogging.SMC_PROHIBITION_FEED_INIT);
+      expect(infoLogSpy.mock.calls[1][0]).toBe(`Processing record with messageId: ${event.Records[0].messageId}`);
+      expect(errorLogSpy.mock.calls[0][0]).toBe(`Error processing record: ${JSON.stringify(event.Records[0])}`);
+      expect(errorLogSpy.mock.calls[1][0]).toBe(mockError);
+      expect(infoLogSpy.mock.calls[2][0])
+        .toBe(`${EventLogging.SMC_PROHIBITION_FEED_FAILURE}: itemIdentifier: ${event.Records[0].messageId}`);
     });
   });
 });
