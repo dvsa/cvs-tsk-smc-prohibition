@@ -23,7 +23,7 @@ const handler = async (
 
   if (SEND_TO_SMC?.toUpperCase() === 'TRUE') {
     logger.debug(`Function triggered with '${JSON.stringify(event)}'.`);
-    logger.info(`${EventLogging.SMC_PROHIBITION_FEED_INIT}`); // TODO awaiting feedback from TSS if required - log event or part of event?
+    logger.info(`${EventLogging.SMC_PROHIBITION_FEED_INIT}`);
 
     for (const record of event.Records) {
       try {
@@ -33,7 +33,7 @@ const handler = async (
 
         if (mcRequests.length > 0) {
           await sendMCProhibition(mcRequests);
-          logger.info(`${EventLogging.SMC_PROHIBITION_FEED_SUCCESS}: itemIdentifier: ${record.messageId}`); // TODO awaiting feedback from TSS if required
+          logger.info(`${EventLogging.SMC_PROHIBITION_FEED_SUCCESS}: itemIdentifier: ${record.messageId}`);
         } else {
           logger.info(`No relevant MC test results found in the record: ${JSON.stringify(dynamoDBEvent)}`);
         }
