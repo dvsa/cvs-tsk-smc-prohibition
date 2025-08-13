@@ -1,50 +1,40 @@
+/* eslint-disable @typescript-eslint/no-unsafe-call */
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable import/no-extraneous-dependencies */
 /* eslint-disable no-underscore-dangle */
 /* eslint-disable @typescript-eslint/ban-ts-comment */
-import { EventBridge, Request } from 'aws-sdk';
-import { mocked } from 'ts-jest/utils';
-import { PutEventsResponse, PutEventsRequest, PutEventsResultEntry } from 'aws-sdk/clients/eventbridge';
+
+import {
+  EventBridgeClient,
+  PutEventsCommand,
+  PutEventsCommandInput,
+  PutEventsCommandOutput,
+  PutEventsResultEntry,
+} from '@aws-sdk/client-eventbridge';
+import { mockClient } from 'aws-sdk-client-mock';
 import { sendMCProhibition } from '../../src/eventbridge/Send';
 import { SendResponse } from '../../src/eventbridge/SendResponse';
 import { MCRequest } from '../../src/utils/MCRequest';
 
-jest.mock('aws-sdk', () => {
-  const mEventBridgeInstance = {
-    putEvents: jest.fn(),
-  };
-  const mRequestInstance = {
-    promise: jest.fn(),
-  };
-  const mEventBridge = jest.fn(() => mEventBridgeInstance);
-  const mRequest = jest.fn(() => mRequestInstance);
+const mEventBridgeInstance = mockClient(EventBridgeClient);
 
-  return {
-    EventBridge: mEventBridge,
-    Request: mRequest,
-  };
-});
-
-type PutEventsWithParams = (params: PutEventsRequest) => AWS.Request<PutEventsResponse, AWS.AWSError>;
-
-const mEventBridgeInstance = new EventBridge();
-const mResultInstance = new Request<PutEventsResponse, AWS.AWSError>(null, null);
-// eslint-disable-next-line @typescript-eslint/unbound-method
-mocked(mEventBridgeInstance.putEvents as PutEventsWithParams)
-  .mockImplementation(
-    (params: PutEventsRequest): AWS.Request<PutEventsResponse, AWS.AWSError> => {
-      const mPutEventsResponse: PutEventsResponse = {
-        FailedEntryCount: 0,
-        Entries: Array<PutEventsResultEntry>(params.Entries.length),
-      };
-      if (params.Entries[0].Detail === '{ "testResult": "{\\"vehicleIdentifier\\":\\"test\\",\\"testDate\\":\\"\\",\\"vin\\":\\"\\",\\"testResult\\":\\"\\",\\"hgvPsvTrailFlag\\":\\"\\"}" }') {
-        mResultInstance.promise = jest.fn()
-          .mockReturnValue(Promise.reject(new Error('Oh no!')));
-      } else {
-        mResultInstance.promise = jest.fn()
-          .mockReturnValue(Promise.resolve(mPutEventsResponse));
-      }
-      return mResultInstance;
-    },
-  );
+mEventBridgeInstance.on(PutEventsCommand).callsFake(
+  (params: PutEventsCommandInput): PutEventsCommandOutput => {
+    const mPutEventsResponse: PutEventsCommandOutput = {
+      FailedEntryCount: 0,
+      Entries: Array<PutEventsResultEntry>(params.Entries.length),
+      $metadata: undefined,
+    };
+    if (
+      params.Entries[0].Detail ===
+      '{ "testResult": "{\\"vehicleIdentifier\\":\\"test\\",\\"testDate\\":\\"\\",\\"vin\\":\\"\\",\\"testResult\\":\\"\\",\\"hgvPsvTrailFlag\\":\\"\\"}" }'
+    ) {
+      throw new Error('Oh no!');
+    } else {
+      return mPutEventsResponse;
+    }
+  },
+);
 
 describe('Events sent', () => {
   it('When one event with multiple test types are returned', async () => {
@@ -71,9 +61,7 @@ describe('Events sent', () => {
       SuccessCount: 2,
       FailCount: 0,
     };
-    await expect(sendMCProhibition(mcRequests))
-      .resolves
-      .toEqual(mSendResponse);
+    await expect(sendMCProhibition(mcRequests)).resolves.toEqual(mSendResponse);
   });
 
   it('When the mc requests are null an error is returned', async () => {
